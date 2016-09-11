@@ -135,10 +135,24 @@ The THE data includes a number of data quality issues to deal with:
 \end{itemize}
 
 \subsubsection{Shanghai Data}
+The Shanghai data is much simpler to work with, but it still has a few issues:
+\begin{itemize}
+\item Rank data includes ranges (200-250, for example). This is solved by replacing ranges with the lower end of the range.
+\item The \textit{total\textunderscore score} attribute is NA for all rows where the rank is in a range. Therefore, the \textit{total\textunderscore score} attribute is ignored. The \textit{world\textunderscore rank} attribute will be used in its place, as it essentially represents the same thing.
+\end{itemize}
+
 
 \subsubsection{CWUR Data}
+The CWUR data is by far the cleanest dataset being used in this report. There are 200 missing values for \textit{broad\textunderscore impact}, which are imputed using the per-country mean for that attribute.
 
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+The supplimentary educational attainment data contains numerous rows of data which represent various statistics about the educational status of a country. The data is very highly dimensional. There are dozens of statistics for each individual country, and each statistic is provided for many years. In order to reduce the dimensionality of the data, the average of the educational statistics was taken, to reduce the dataset to a simple 1-1 mapping of a country name to an overall education score. Many of the rows of the dataset were population data which were not included in the computation of the means.
+
+The Expenditure dataset has a number of missing-data related issues:
+\begin{itemize}
+\item Private educational spending data is only included for one year of the study. Because this report does not focus on private education expenditures, this data is ommitted.
+\item There is considerable missing data for the public expenditures of countries. However, for each country, there is at least 3-years worth of data. For that reason, the data will is reduced to a two-column set where the first column is the name of the country and the second column is the average expenditure on university education by that country over the 5 years that the data was collected.
+\end{itemize}
 
 \subsection{First Look at Attributes}
 firstlook
