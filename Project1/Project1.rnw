@@ -1,0 +1,216 @@
+\documentclass[12pt]{article}
+\usepackage[margin=0.9in]{geometry} 
+\usepackage{enumitem}
+\setlist{noitemsep}
+ 
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+
+
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+      {\Huge A Novel Analysis of Collegiate Ranking Data}\\[0.5cm]
+      {\Large Identifying University Attributes which Correlate with Ranking}\\[1.0cm]
+      {\Large Ian Johnson}\\[0.4cm]
+      {\Large Southern Methodist University}\\[0.4cm]
+      \today
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
+
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+  
+      {\Large Abstract}\\[1.0cm]
+
+     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\\[3.0cm]
+     
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
+
+
+\section{Business Understanding}
+
+\subsection{Purpose}
+
+The purpose of exploring collegiate ranking data is to identify trends which may provide insights to universities, governments, employers, and students which may help inform their decisions. The following are impetuses for each of those groups:
+\begin{itemize}
+\item \textbf{Universities} would like to learn how they can increase their rankings. Discovering trends in ranking data may help administrations discern what factors are most important in optimizing ranking.
+\item \textbf{Governments} on a local and national level would benefit from understanding what draw students to universities, as college students contribute significantly to an economy, and it is in the best interest of any government to have a well-educated constituency.
+\item \textbf{Employers} may take interest in identifying schools, regions, or countries which are likely to have top-tier students so that they can efficiently recruit top talent.
+\item \textbf{Students}, especially those in high school, as well as their parents, take great interest in the rankings of the schools to which they apply. A well-informed understanding of those rankings could help a student decide what colleges are of interest.
+\end{itemize}
+
+\subsection{Potential Results}
+
+Two general sets of results may be of interest to the groups listed above. The first is a somewhat novel result: a clear understanding of the relative rankings of universities. Aggregating the data may help identify which universities are truly top-tier. The second, more difficult to achieve result, is an understanding of correlations between certain university attributes and their rankings. 
+
+The latter set of results may be of interest to \textbf{universities}, who perpetually seek to increase their own rankings, and \textbf{governments}, who take interest in the rankings of their constituent universities, which represent a source of significant positive economic influence. \textbf{Students} and \textbf{employers}, on the other hand, are more likely to take interest in aggregated rank data, so that they can identify what schools are the most likely to help them succeed, or help them find top talent.
+
+\subsection{Measure of Success}
+For each of the two identified goals of the forthcoming analyses, a metric must be defined which will be used to evaluate the significance of the results. For the novel goal of aggregating rankings, a successful analysis will provide a clear comparison between any two schools. With respect to the goal of identifying correlations between ranking and other metrics, a successful analysis will be one which describes specific school metrics and how they correlate with overall rank. Additionally, a successful analysis will allow a university to idenfity what to focus on in an effort to increase ranking.
+
+\section{Data Understanding}
+
+\subsection{Attribute Information}
+A number of distinct university ranking datasets will be used. Each of the three main datasets includes many attributes about each university.
+Two additional datasets will be used which provide information on education expenditure and attainment by country.
+
+\subsubsection{Times Higher Education Data}
+<<echo=FALSE>>=
+library(zoo)
+
+format.rank <- function(x) {
+  
+  if(grepl("=", x)){
+    x <- substring(x, 2)
+  }
+  
+  if(grepl("-", x)){
+    x <- substring(x, 1, 3)
+  }
+  
+  return(x)
+  
+}
+
+the.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/timesData.csv', stringsAsFactors = FALSE)
+the.data$female_male_ratio <- as.numeric(substring(the.data$female_male_ratio, 0, 2)) / as.numeric(substring(the.data$female_male_ratio, 6, 8))
+the.data$female_male_ratio <- ave(the.data$female_male_ratio, the.data$country, FUN = na.aggregate)
+the.data$num_students <- gsub(",", "", the.data$num_students)
+the.data$international_students <- as.numeric(gsub("%", "", the.data$international_students)) / 100
+nums <- c('teaching', 'international', 'research', 'citations', 'income', 'total_score', 'num_students', 'student_staff_ratio', 'international_students')
+the.data[nums] <- lapply(the.data[nums], as.numeric)
+the.data[nums] <- ave(the.data[nums], the.data$country, FUN = na.aggregate)
+the.data$world_rank <- as.numeric(sapply(the.data$world_rank, format.rank))
+the.data$international_students <- as.numeric(substring(the.data$international_students, 0, 2))
+head(the.data)
+the.data[c(5, 8, 11, 12, 13)] <- ave(the.data[c(5, 8, 11, 12, 13)], the.data$country, FUN = na.aggregate)
+the.data$total_score[is.na(the.data$total_score)] <- mean(the.data$total_score[!is.na(the.data$total_score)])
+the.data <- na.omit(the.data)
+table(is.na(the.data))
+
+
+@
+The THE dataset contains collegiate ranking data spanning from 2011-2016, and contains the following attributes:
+\begin{itemize}
+\item \textbf{world\textunderscore rank} \textit{interval}: the world-wide rank for the university (can be an individual number or a range)
+\item \textbf{university\textunderscore name} \textit{nominal}: the name of the university
+\item \textbf{country} \textit{nominal}: the country where the university is located
+\item \textbf{teaching} \textit{ratio}: the THE score for teaching
+\item \textbf{international} \textit{ratio}: the THE score for international outlook
+\item \textbf{research} \textit{ratio}: the THE score for research, based on volume, income, and reputation
+\item \textbf{citations} \textit{ratio}: the THE score for citations and research influence
+\item \textbf{income} \textit{ratio}: the THE score for industry income
+\item \textbf{total\textunderscore score} \textit{ratio}: the THE total score, used for ranking
+\item \textbf{num\textunderscore students} \textit{ratio}: the number of students attending the university
+\item \textbf{student\textunderscore staff\textunderscore ratio} \textit{ratio}: the number of students per staff member
+\item \textbf{international\textunderscore students} \textit{ratio}: the percentage of students who are international
+\item \textbf{female\textunderscore male\textunderscore ratio} \textit{ratio}: the number of female students per male student
+\item \textbf{year} \textit{interval}: the year that this ranking occurred
+\end{itemize}
+
+\subsubsection{Shanghai Data}
+<<echo=FALSE>>=
+sha.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/shanghaiData.csv')
+@
+The Shanghai Ranking dataset contains collegiate ranking data from 2005-2015, and contains the following attributes:
+\begin{itemize}
+\item \textbf{world\textunderscore rank} \textit{ordinal}: the world-wide rank for the university (can be an individual number or a range)
+\item \textbf{university\textunderscore name} \textit{nominal}: the name of the university
+\item \textbf{total\textunderscore score} \textit{ratio}: the Shanghai Ranking total score, used for ranking
+\item \textbf{alumni} \textit{ratio}: alumni score based on the number of alumni winning nobel prizes and fields medals
+\item \textbf{award} \textit{ratio}: metric for the number of staff winning nobel prizes and fields medals
+\item \textbf{hici} \textit{ratio}: metric for the number of highly-cited researchers at the university
+\item \textbf{ns} \textit{ratio}: metric for the number of papers published in \textit{Nature and Science}
+\item \textbf{pub} \textit{ratio}: metric for the number of papers indexed in \textit{Science Citation Index-Expanded} and \textit{Social Science Citation Index}
+\item \textbf{pcp} \textit{ratio}: weighted scores of above five indicators, divided by number of full time academic staff
+\item \textbf{year} \textit{interval}: the year that this ranking occurred
+\end{itemize}
+
+
+\subsubsection{CWUR Data}
+<<echo=FALSE>>=
+cwu.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/cwurData.csv')
+@
+The CWUR Ranking dataset contains collegiate ranking data from 2012-2015, and contains the following attributes:
+\begin{itemize}
+\item \textbf{world\textunderscore rank} \textit{interval}: the world-wide rank for the university
+\item \textbf{university\textunderscore name} \textit{nominal}: the name of the university
+\item \textbf{country} \textit{nominal}: the country where the university is located
+\item \textbf{national\textunderscore rank} \textit{interval}: the nation-wide rank for the university
+\item \textbf{quality\textunderscore of\textunderscore education} \textit{interval}: CWUR rank for quality of education
+\item \textbf{alumni\textunderscore employment} \textit{interval}: CWUR rank for alumni employment
+\item \textbf{quality\textunderscore of\textunderscore faculty} \textit{interval}: CWUR rank for quality of faculty
+\item \textbf{publications} \textit{interval}: CWUR rank for publications
+\item \textbf{influence} \textit{interval}: CWUR rank for influence
+\item \textbf{citations} \textit{interval}: CWUR rank for citations
+\item \textbf{broad\textunderscore impact} \textit{interval}: CWUR rank for broad impact (2014/2015 only)
+\item \textbf{patents} \textit{interval}: CWUR rank for patents
+\item \textbf{score} \textit{interval}: CWUR total score, used for world rank
+\item \textbf{year} \textit{interval}: the year that this ranking occurred
+\end{itemize}
+
+\subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+<<echo=FALSE>>=
+att.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/educational_attainment_supplementary_data.csv')
+exp.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/education_expenditure_supplementary_data.csv')
+@
+The following supplementary datasets will be used for analyses:
+\begin{itemize}
+\item \textbf{Barro-Lee Dataset}: The average years of schooling among age and gender groups in 144 countries (1985-2015 every 5 years)
+\item \textbf{NCES Dataset}: The amount of public direct expenditure on education by country (1995-2010 every 5 years)
+\end{itemize}
+Because these datasets are not simple table data, they are described above based on contents, rather than based on table schema.
+
+\subsection{Data Quality}
+
+\subsubsection{Times Higher Education Data}
+The THE data includes a number of data quality issues to deal with:
+\begin{itemize}
+\item Rank data includes ranges (200-250, for example), and some ranks include equals signs (=85). These data problems are dealt with by removing equals signs, and replacing ranges with the lower end of the range.
+\item Ratio data is given as x:y instead of as a quotient. This is converted to a quotient in pre-processing
+\item Percentage data is given in string form (including \% sign). The \% sign is removed.
+\end{itemize}
+
+\subsubsection{Shanghai Data}
+
+\subsubsection{CWUR Data}
+
+\subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+
+\subsection{First Look at Attributes}
+firstlook
+
+\subsection{Attribute Visualizations}
+vis
+
+\subsection{SMU: A Case Study}
+SMU
+
+\subsection{Attribute Relationships}
+relats
+
+\subsection{Geographic Relationships}
+geography
+
+
+\begin{thebibliography}{9}
+\bibitem{latexcompanion}
+Michel Goossens, Frank Mittelbach, and Alexander Samarin.
+\textit{The \LaTeX\ Companion}.
+Addison-Wesley, Reading, Massachusetts, 1993.
+\end{thebibliography}
+
+
+\end{document}
+
+
+%Notes: https://gist.github.com/cdesante/4252133 for mapping USA
+%Data Source: https://www.kaggle.com/mylesoneill/world-university-rankings
+
+              
