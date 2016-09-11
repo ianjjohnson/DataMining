@@ -1,8 +1,18 @@
-att.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/educational_attainment_supplementary_data.csv')
+exp.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/education_expenditure_supplementary_data.csv')
+exp.data <- exp.data[76:111,]
+exp.data <- exp.data[exp.data$direct_expenditure_type == "Public",]
+exp.data$mean <- rowMeans(exp.data[4:9], na.rm=TRUE)
+exp.data <- exp.data[c(1, 10)]
+
+storage.mode(exp.data$X1995)
+!is.na(exp.data[4:9])
+
+na.omit(exp.data[4:9])
+
+exp.data[table(is.na(exp.data[4:9]))]
 
 
-table(is.na(cwu.data))
-lapply(lapply(cwu.data, is.na), table)
+lapply(lapply(exp.data, is.na), table)
 
 rm(list = ls())
 
