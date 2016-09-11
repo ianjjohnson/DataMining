@@ -126,6 +126,13 @@ Because these datasets are not simple table data, they are described above based
 \subsection{Data Quality}
 
 \subsubsection{Times Higher Education Data}
+The THE data includes a number of data quality issues to deal with:
+\begin{itemize}
+\item Rank data includes ranges (200-250, for example), and some ranks include equals signs (=85). These data problems are dealt with by removing equals signs, and replacing ranges with the lower end of the range.
+\item Ratio data is given as x:y instead of as a quotient. This is converted to a quotient in pre-processing
+\item Percentage data is given in string form (including \% sign). The \% sign is removed.
+\item There is missing data for a number of attributes. Predominantly for the \textit{income} column. Missing data was imputed using the per-country 5\%-trimmed-mean by attribute.
+\end{itemize}
 
 \subsubsection{Shanghai Data}
 

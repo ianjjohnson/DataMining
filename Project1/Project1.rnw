@@ -78,7 +78,7 @@ format.rank <- function(x) {
   
 }
 
-the.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/timesData.csv', stringsAsFactors = FALSE)
+the.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/timesData.csv', stringsAsFactors = FALSE)
 the.data$female_male_ratio <- as.numeric(substring(the.data$female_male_ratio, 0, 2)) / as.numeric(substring(the.data$female_male_ratio, 6, 8))
 the.data$female_male_ratio <- ave(the.data$female_male_ratio, the.data$country, FUN = na.aggregate)
 the.data$num_students <- gsub(",", "", the.data$num_students)
@@ -88,13 +88,9 @@ the.data[nums] <- lapply(the.data[nums], as.numeric)
 the.data[nums] <- ave(the.data[nums], the.data$country, FUN = na.aggregate)
 the.data$world_rank <- as.numeric(sapply(the.data$world_rank, format.rank))
 the.data$international_students <- as.numeric(substring(the.data$international_students, 0, 2))
-head(the.data)
 the.data[c(5, 8, 11, 12, 13)] <- ave(the.data[c(5, 8, 11, 12, 13)], the.data$country, FUN = na.aggregate)
 the.data$total_score[is.na(the.data$total_score)] <- mean(the.data$total_score[!is.na(the.data$total_score)])
 the.data <- na.omit(the.data)
-table(is.na(the.data))
-
-
 @
 The THE dataset contains collegiate ranking data spanning from 2011-2016, and contains the following attributes:
 \begin{itemize}
@@ -116,7 +112,10 @@ The THE dataset contains collegiate ranking data spanning from 2011-2016, and co
 
 \subsubsection{Shanghai Data}
 <<echo=FALSE>>=
-sha.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/shanghaiData.csv')
+sha.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/shanghaiData.csv')
+sha.data$total_score <- NULL
+sha.data$world_rank <- as.numeric(sapply(sha.data$world_rank, format.rank))
+sha.data <- na.omit(sha.data)
 @
 The Shanghai Ranking dataset contains collegiate ranking data from 2005-2015, and contains the following attributes:
 \begin{itemize}
@@ -135,7 +134,8 @@ The Shanghai Ranking dataset contains collegiate ranking data from 2005-2015, an
 
 \subsubsection{CWUR Data}
 <<echo=FALSE>>=
-cwu.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/cwurData.csv')
+cwu.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/cwurData.csv')
+cwu.data$broad_impact <- ave(cwu.data$broad_impact, cwu.data$country, FUN = na.aggregate)
 @
 The CWUR Ranking dataset contains collegiate ranking data from 2012-2015, and contains the following attributes:
 \begin{itemize}
@@ -157,8 +157,8 @@ The CWUR Ranking dataset contains collegiate ranking data from 2012-2015, and co
 
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
 <<echo=FALSE>>=
-att.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/educational_attainment_supplementary_data.csv')
-exp.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Project1/data/education_expenditure_supplementary_data.csv')
+att.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/educational_attainment_supplementary_data.csv')
+exp.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/education_expenditure_supplementary_data.csv')
 @
 The following supplementary datasets will be used for analyses:
 \begin{itemize}
@@ -175,11 +175,19 @@ The THE data includes a number of data quality issues to deal with:
 \item Rank data includes ranges (200-250, for example), and some ranks include equals signs (=85). These data problems are dealt with by removing equals signs, and replacing ranges with the lower end of the range.
 \item Ratio data is given as x:y instead of as a quotient. This is converted to a quotient in pre-processing
 \item Percentage data is given in string form (including \% sign). The \% sign is removed.
+\item There is missing data for a number of attributes. Predominantly for the \textit{income} column. Missing data was imputed using the per-country 5\%-trimmed-mean by attribute.
 \end{itemize}
 
 \subsubsection{Shanghai Data}
+The Shanghai data is much simpler to work with, but it still has a few issues:
+\begin{itemize}
+\item Rank data includes ranges (200-250, for example). This is solved by replacing ranges with the lower end of the range.
+\item The total_score attribute is NA for all rows where the rank is in a range. Therefore, the total_score attribute is ignored. The world_rank attribute will be used in its place, as it essentially represents the same thing.
+\end{itemize}
+
 
 \subsubsection{CWUR Data}
+The CWUR data is by far the cleanest dataset being used in this report. There are 200 missing values for \textit{broad_impact}, which are imputed using the per-country mean for that attribute.
 
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
 
