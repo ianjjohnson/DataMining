@@ -2,12 +2,9 @@
 \usepackage[margin=0.9in]{geometry} 
 \usepackage{enumitem}
 \setlist{noitemsep}
- 
+
 \usepackage{Sweave}
 \begin{document}
-
-\input{Project1-concordance}
-
 
 \begin{titlepage}
 \vspace*{\fill}
@@ -57,11 +54,13 @@ For each of the two identified goals of the forthcoming analyses, a metric must 
 
 \section{Data Understanding}
 
+The remainder of this report will refer to a number of datasets, all of which are referenced below. Data analysis on these datasets was done using the R programming language, and a number of 3rd party R packages.
+
 \subsection{Attribute Information}
 A number of distinct university ranking datasets will be used. Each of the three main datasets includes many attributes about each university.
 Two additional datasets will be used which provide information on education expenditure and attainment by country.
 
-\subsubsection{Times Higher Education Data}
+\subsubsection{Times Higher Education Data \textsuperscript{[1]}}
 The THE dataset contains collegiate ranking data spanning from 2011-2016, and contains the following attributes:
 \begin{itemize}
 \item \textbf{world\textunderscore rank} \textit{interval}: the world-wide rank for the university (can be an individual number or a range)
@@ -80,7 +79,7 @@ The THE dataset contains collegiate ranking data spanning from 2011-2016, and co
 \item \textbf{year} \textit{interval}: the year that this ranking occurred
 \end{itemize}
 
-\subsubsection{Shanghai Data}
+\subsubsection{Shanghai Data \textsuperscript{[2]}}
 The Shanghai Ranking dataset contains collegiate ranking data from 2005-2015, and contains the following attributes:
 \begin{itemize}
 \item \textbf{world\textunderscore rank} \textit{ordinal}: the world-wide rank for the university (can be an individual number or a range)
@@ -96,7 +95,7 @@ The Shanghai Ranking dataset contains collegiate ranking data from 2005-2015, an
 \end{itemize}
 
 
-\subsubsection{CWUR Data}
+\subsubsection{CWUR Data \textsuperscript{[3]}}
 The CWUR Ranking dataset contains collegiate ranking data from 2012-2015, and contains the following attributes:
 \begin{itemize}
 \item \textbf{world\textunderscore rank} \textit{interval}: the world-wide rank for the university
@@ -115,7 +114,7 @@ The CWUR Ranking dataset contains collegiate ranking data from 2012-2015, and co
 \item \textbf{year} \textit{interval}: the year that this ranking occurred
 \end{itemize}
 
-\subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+\subsubsection{Supplimentary Educational Attainment and Expenditure Data \textsuperscript{[4][5]}}
 The following supplementary datasets will be used for analyses:
 \begin{itemize}
 \item \textbf{Barro-Lee Dataset}: The average years of schooling among age and gender groups in 144 countries (1985-2015 every 5 years)
@@ -133,6 +132,7 @@ The THE data includes a number of data quality issues to deal with:
 \item Percentage data is given in string form (including \% sign). The \% sign is removed.
 \item There is missing data for a number of attributes. Predominantly for the \textit{income} column. Missing data was imputed using the per-country 5\%-trimmed-mean by attribute.
 \end{itemize}
+Data processing for this dataset was performed using the CRAN package 'Zoo' \textsuperscript{[6]}
 
 \subsubsection{Shanghai Data}
 The Shanghai data is much simpler to work with, but it still has a few issues:
@@ -155,7 +155,10 @@ The Expenditure dataset has a number of missing-data related issues:
 \end{itemize}
 
 \subsection{First Look at Attributes}
-firstlook
+\subsubsection{Times Higher Education Data}
+\subsubsection{Shanghai Data}
+\subsubsection{CWUR Data}
+\subsubsection{Supplimentary Educational Attainment and Expenditure Data}
 
 \subsection{Attribute Visualizations}
 vis
@@ -169,16 +172,19 @@ relats
 \subsection{Geographic Relationships}
 geography
 
+\begin{thebibliography}{9} 
 
-\begin{thebibliography}{9}
-\bibitem{latexcompanion}
-Michel Goossens, Frank Mittelbach, and Alexander Samarin.
-\textit{The \LaTeX\ Companion}.
-Addison-Wesley, Reading, Massachusetts, 1993.
-\end{thebibliography}
-
+\bibitem{times} THE Times Higher Education Rankings. \textit{timeshighereducation.com}, THE World Rankings, 2016.
+\bibitem{shanghai} Academic Ranking of World Universities. \textit{shanghairanking.com}, Shanghai World Rankings, 2015.
+\bibitem{cwur} CWUR | Center for World University Rankings. \textit{cwur.org}, Worlds Top Universities, Rankings by Country, 2015.
+\bibitem{attainment} Education Attainment Query. \textit{datatopics.worldbank.org}, Barro-Lee Dataset, UNESCO Institute for Statistics, 2013.
+\bibitem{expenditure} National Center for Education Statistics. \textit{nces.edu.gov}, Digest of Education Expenditure Statistics, 2011.
+\bibitem{zoo} Achim Zeileis and Gabor Grothendieck (2005). zoo: S3 Infrastructure for Regular and Irregular Time Series. Journal of Statistical Software,
+  14(6), 1-27. URL http://www.jstatsoft.org/v14/i06/
+\end{thebibliography} 
 
 \end{document}
+
 
 
 %Notes: https://gist.github.com/cdesante/4252133 for mapping USA
