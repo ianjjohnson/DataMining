@@ -210,9 +210,37 @@ The Expenditure dataset has a number of missing-data related issues:
 
 \subsection{First Look at Attributes}
 \subsubsection{Times Higher Education Data}
+To take a first look at the THE data, the data is aggregated by column per year and the mean of each column-year is calculated:
+
+<<echo=FALSE>>=
+aggregate(cbind(teaching,international, research, citations, income, total_score, num_students, student_staff_ratio) ~ year, the.data, FUN = mean)
+@
+
+What this table shows is that, in general, THE scores have gone down over the course of the last 5 years. At this point, it's not possible to identify if this is caused by decreasing qualities of universities or by increasing standards from the Times Higher Education scorers.
+
+This table also shows an increasing average student-to-staff ratio over the last 5 years among sampled universities. However, the average number of students is not decreasing significantly. This suggests that the size of the faculty of ranked universities may be decreasing. One possible explaination for this would be the increased prevalence of adjunct faculty members in the united states. The AAUP (American Association of University Professors) recently claimed that over half of US University professors are part time \textsuperscript{[7]}. This seems to suggest that the increasing number of adjunct faculty is responsible for the rise in student-to-staff ratio.
+
+An additional possible reason is that in 2016, nearly 800 universities were included in the dataset, while in 2011 only 200 were included. 
+The following table shows the number of samples for the student-to-staff ratio year-by-year:
+
+<<echo=FALSE>>=
+aggregate(student_staff_ratio ~ year, the.data, FUN = length)
+@
+
+Because so many additional schools were sampled, it's possible that the additional, lower-ranked schools considerably increased the average student-to-staff ratio. This will be explored more in later sections.
+
+
 \subsubsection{Shanghai Data}
+To take a cursory look at the Shanghai dataset, the various statistics from the dataset are aggregated by year, and their means are computed:
+
+<<echo=FALSE>>=
+aggregate(cbind(alumni, award, hici, ns, pub, pcp) ~ year, sha.data, FUN = mean)
+@
+
+
 \subsubsection{CWUR Data}
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+
 
 \subsection{Attribute Visualizations}
 vis
@@ -235,6 +263,7 @@ geography
 \bibitem{expenditure} National Center for Education Statistics. \textit{nces.edu.gov}, Digest of Education Expenditure Statistics, 2011.
 \bibitem{zoo} Achim Zeileis and Gabor Grothendieck (2005). zoo: S3 Infrastructure for Regular and Irregular Time Series. Journal of Statistical Software,
   14(6), 1-27. URL http://www.jstatsoft.org/v14/i06/
+\bibitem{adjunct} "Background Facts on Contingent Faculty." \textit{AAUP}. American Association of University Professors, n.d. Web. 12 Sept. 2016.
 \end{thebibliography} 
 
 \end{document}

@@ -29,3 +29,6 @@ format.rank <- function(x) {
   return(x)
   
 }
+
+aggregate(cbind(alumni, award, hici, ns, pub, pcp) ~ year, sha.data, FUN = length)
+aggregate(cbind(teaching,international, research, citations, income, total_score, num_students, student_staff_ratio) ~ year, the.data, FUN = length)
