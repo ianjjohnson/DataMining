@@ -274,7 +274,7 @@ Recall this data is two column table data, where the first column is the name of
 
 For the educational expenditure data, the distribution of scores is as follows:
 <<echo=FALSE>>=
-summary(exp$X2005)
+summary(exp.data$X2005)
 @
 This data, like the attainment dataset, is a two column table, where the first column is the name of a country and the second column is an aggregate public university expenditure score, computed from the multi-year educational expenditure dataset \textsuperscript{[5]}.
 

@@ -276,7 +276,25 @@ It appears that the latter of the possibilities occurred: in 2014, the number of
 
 
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+Because the supplimentary attainment and expenditure data was reduced to single-dimensional data with an artificial (unitless) scale, the only meaningful summary of those datasets is a simple summary with means and quantiles of the new scale of data.
 
+For the educational attainment dataset, the distribution of scores is as follows:
+\begin{Schunk}
+\begin{Soutput}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  9.801  12.530  14.560  14.320  16.260  18.780 
+\end{Soutput}
+\end{Schunk}
+Recall this data is two column table data, where the first column is the name of a country and the second column is an aggregate educational attainment score for that country, computed from the multi-dimensional data in the educational attainment dataset \textsuperscript{[4]}.
+
+For the educational expenditure data, the distribution of scores is as follows:
+\begin{Schunk}
+\begin{Soutput}
+Length  Class   Mode 
+     0   NULL   NULL 
+\end{Soutput}
+\end{Schunk}
+This data, like the attainment dataset, is a two column table, where the first column is the name of a country and the second column is an aggregate public university expenditure score, computed from the multi-year educational expenditure dataset \textsuperscript{[5]}.
 
 \subsection{Attribute Visualizations}
 vis
