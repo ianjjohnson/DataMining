@@ -219,8 +219,62 @@ To take a cursory look at the Shanghai dataset, the various statistics from the 
 \end{Soutput}
 \end{Schunk}
 
+The first insight from this matrix is that, in general, aggregate scores (\textit{pcp}) have not changed significantly over the course of the years sampled. However, individual statistics have changed somewhat. The \textit{alumni} score, for example, has steadily decreased over the years, while the \textit{pub} score has steadily increased. Interestingly, citation averages for U.S universities by-year have been decreasing since 2001 \textsuperscript{[8]}. One possible explanation of the increasing citation scores is that the scores are cumulative citation scores, as opposed to year-by-year scores. The result of such a measurement system would be that scores have a tendency to increase over time. The principle issue with such a system is that it would heavily favor universities that were elite in the past, and lose focus on which universities are producing the best research on a year-to-year basis. The Shanhai dataset provides no documentation on the meaning of this attribute to discern which of these two measurement strategies is being used \textsuperscript{[2]}.
+
+The second major insight that this matrix indicates is that scores were very high in 2012 and 2013. These seem well outside the norm. To examine why, the following table shows the number of universities sampled, year-by-year.
+
+\begin{Schunk}
+\begin{Soutput}
+   year pcp
+1  2005 498
+2  2006 498
+3  2007 508
+4  2008 501
+5  2009 499
+6  2010 498
+7  2011 497
+8  2012 283
+9  2013  98
+10 2014 497
+11 2015 498
+\end{Soutput}
+\end{Schunk}
+
+The Shanghai data, it seems, has the opposite problem of the THE data. The years 2012 and 2013 have far fewer sampled universities, so in those years only a select few elite schools were ranked. This is what caused the significant mean score inflation for those two years.
+
 
 \subsubsection{CWUR Data}
+For the CWUR data, the final simple table dataset for this report, the same strategy will be used to gain some cursory insight into the data. The following matrix represents the year-by-year averages for every attribute in the CWUR dataset.
+\begin{Schunk}
+\begin{Soutput}
+  year alumni_employment quality_of_faculty publications influence citations
+1 2012               100                100          100       100       100
+2 2013               100                100          100       100       100
+3 2014              1000               1000         1000      1000      1000
+4 2015              1000               1000         1000      1000      1000
+  broad_impact patents score
+1          100     100   100
+2          100     100   100
+3         1000    1000  1000
+4         1000    1000  1000
+\end{Soutput}
+\end{Schunk}
+
+From a quick glance at the matrix, it looks like there are two sets of year pairs during which the rankings were very similar. The scores from 2012 and 2013 are nearly identical, and the same is true for 2014 and 2015. From this, two things are apparent. First, it seems that the CWUR data is the most constant over time. Second, it appears that one of two things occurred between 2013 and 2014: either the scoring system changed, or the number of universities sampled dramatically increased. To check which of those is true, the following matrix shows the number of universities scored each year over the course of the 4 years.
+
+\begin{Schunk}
+\begin{Soutput}
+  year score
+1 2012   100
+2 2013   100
+3 2014  1000
+4 2015  1000
+\end{Soutput}
+\end{Schunk}
+
+It appears that the latter of the possibilities occurred: in 2014, the number of universities sampled increased ten-fold.
+
+
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
 
 
@@ -246,6 +300,8 @@ geography
 \bibitem{zoo} Achim Zeileis and Gabor Grothendieck (2005). zoo: S3 Infrastructure for Regular and Irregular Time Series. Journal of Statistical Software,
   14(6), 1-27. URL http://www.jstatsoft.org/v14/i06/
 \bibitem{adjunct} "Background Facts on Contingent Faculty." \textit{AAUP}. American Association of University Professors, n.d. Web. 12 Sept. 2016.
+\bibitem{thepub} THE Citation Data, "Citation Averages, 2000-2010, by Fields and Years." THE. Times Higher Education, 22 May 2015. Web. 13 Sept. 2016.
+%8 so far
 \end{thebibliography} 
 
 \end{document}
