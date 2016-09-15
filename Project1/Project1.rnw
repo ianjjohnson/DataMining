@@ -23,7 +23,7 @@
   
       {\Large Abstract}\\[1.0cm]
 
-     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\\[3.0cm]
+     This report explores collegiate ranking data from a number of independent ranking organizations and attempts to idenfity trends among ranking attributes for each university. A number of university attributes are identified as key factors in university ranking, and other attributes are identified as relatively unimportant with respect to ranks. Southern Methodist University is examined in detail, and SMU's weaknesses and strengths are analyzed to identify what factors would be most valuable for the university to optimize in an effort to increase ranking. \\[3.0cm]
      
 \end{center}
 \vspace*{\fill}
@@ -312,9 +312,10 @@ The first important metric to visualize for the THE dataset is the distribution 
 <<echo=FALSE, fig=TRUE>>=
 single.year <- the.data[the.data$year == 2016,]
 hist(single.year$total_score, main = "Histogram of THE Total Scores in 2016", col="blanchedalmond", xlab = "Total Score")
+lines(density(single.year$total_score), col="red")
 @
 
-What the above histogram indicates is that the total score of a university, as measured by THE, is unimodally distributed and heavily left skewed. There is a very noticeable drop-off in frequency when total score goes from the 60-65 range to the 65-70 range. What this indicates is that the THE dataset has a clear set of elite universities. It also provides a simple cutoff to define a class of 'top-tier' universities. Such a cutoff seems to exist at the 65 total score mark. \\
+The above histogram indicates that the total score of a university, as measured by THE, is unimodally distributed and heavily left skewed. There is a very noticeable drop-off in frequency when total score goes from the 60-65 range to the 65-70 range. What this indicates is that the THE dataset has a clear set of elite universities. It also provides a simple cutoff to define a class of 'top-tier' universities. Such a cutoff seems to exist at the 65 total score mark. \\
 
 \textbf{\textit{THE Data Individual Score Distributions}} \\
 
@@ -330,6 +331,8 @@ The violin plots of the score distributions shows, interestingly, that teaching 
 
 
 \subsubsection{Shanghai Data}
+
+
 \subsubsection{CWUR Data}
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
 
@@ -339,6 +342,7 @@ SMU
 
 \subsection{Attribute Relationships}
 relats
+do a comparison using rank correlation of the THE vs Shanghai vs CWUR datasets.
 
 \subsection{Geographic Relationships}
 geography
@@ -354,7 +358,7 @@ geography
   14(6), 1-27. URL http://www.jstatsoft.org/v14/i06/
 \bibitem{adjunct} "Background Facts on Contingent Faculty." \textit{AAUP}. American Association of University Professors, n.d. Web. 12 Sept. 2016.
 \bibitem{thepub} THE Citation Data, "Citation Averages, 2000-2010, by Fields and Years." THE. Times Higher Education, 22 May 2015. Web. 13 Sept. 2016.
-\bibitem{vioplot} Daniel Adler (2005). vioplot: Violin plot. R package version 0.2. http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler
+\bibitem{vioplot} Daniel Adler (2005). \textit{vioplot}: Violin plot. R package version 0.2. http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler
 %9 so far
 \end{thebibliography} 
 
