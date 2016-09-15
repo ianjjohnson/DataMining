@@ -39,3 +39,21 @@ aggregate(score ~ year, cwu.data, FUN = length)
 summary(exp.data)
 summary(exp.data$mean)
 summary(att.data$X2005)
+
+my_sample <- function(x) {
+  return(sample(scale(x), 100))
+}
+
+the.data.sampled <- as.data.frame(lapply(the.data[c(5, 7, 8, 10)], my_sample))
+plot(the.data.sampled)
+table(the.data$year)
+plot(single.year$teaching)
+plot.histogram(single.year$total_score)
+
+single.year <- the.data[the.data$year == 2016,]
+hist(single.year$total_score, main = "Histogram of THE Total Scores in 2016", col="blanchedalmond")
+
+
+citation('vioplot')
+
+?vioplot

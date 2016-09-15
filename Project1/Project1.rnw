@@ -155,6 +155,7 @@ The CWUR Ranking dataset contains collegiate ranking data from 2012-2015, and co
 \end{itemize}
 
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data \textsuperscript{[4][5]}}
+
 <<echo=FALSE>>=
 att.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/educational_attainment_supplementary_data.csv')
 att.data <- att.data[!grepl("thousands", att.data$series_name),]
@@ -179,6 +180,7 @@ Because these datasets are not simple table data, they are described above based
 \subsection{Data Quality}
 
 \subsubsection{Times Higher Education Data}
+
 The THE data includes a number of data quality issues to deal with:
 \begin{itemize}
 \item Rank data includes ranges (200-250, for example), and some ranks include equals signs (=85). These data problems are dealt with by removing equals signs, and replacing ranges with the lower end of the range.
@@ -189,6 +191,7 @@ The THE data includes a number of data quality issues to deal with:
 Data processing for this dataset was performed using the CRAN package 'Zoo' \textsuperscript{[6]}
 
 \subsubsection{Shanghai Data}
+
 The Shanghai data is much simpler to work with, but it still has a few issues:
 \begin{itemize}
 \item Rank data includes ranges (200-250, for example). This is solved by replacing ranges with the lower end of the range.
@@ -197,9 +200,11 @@ The Shanghai data is much simpler to work with, but it still has a few issues:
 
 
 \subsubsection{CWUR Data}
+
 The CWUR data is by far the cleanest dataset being used in this report. There are 200 missing values for \textit{broad\textunderscore impact}, which are imputed using the per-country mean for that attribute.
 
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+
 The supplimentary educational attainment data contains numerous rows of data which represent various statistics about the educational status of a country. The data is very highly dimensional. There are dozens of statistics for each individual country, and each statistic is provided for many years. In order to reduce the dimensionality of the data, the average of the educational statistics was taken, to reduce the dataset to a simple 1-1 mapping of a country name to an overall education score. Many of the rows of the dataset were population data which were not included in the computation of the means.
 
 The Expenditure dataset has a number of missing-data related issues:
@@ -209,7 +214,9 @@ The Expenditure dataset has a number of missing-data related issues:
 \end{itemize}
 
 \subsection{First Look at Attributes}
+
 \subsubsection{Times Higher Education Data}
+
 To take a first look at the THE data, the data is aggregated by column per year and the mean of each column-year is calculated:
 
 <<echo=FALSE>>=
@@ -229,8 +236,15 @@ aggregate(student_staff_ratio ~ year, the.data, FUN = length)
 
 Because so many additional schools were sampled, it's possible that the additional, lower-ranked schools considerably increased the average student-to-staff ratio. This will be explored more in later sections.
 
+To quickly identify if any of the measured attributes are heavily skewed, the following tables show the median of each attribute, for comparison against the above means.
+<<echo=FALSE>>=
+aggregate(cbind(teaching,international, research, citations, income, total_score, num_students, student_staff_ratio) ~ year, the.data, FUN = median)
+@
+
+A novel look at the medians show that there is no significantly skewed data. A table of the ratio of the median and modes of the data show no significant differences for any data attribute. The table is ommited from this report for the sake of brevity.
 
 \subsubsection{Shanghai Data}
+
 To take a cursory look at the Shanghai dataset, the various statistics from the dataset are aggregated by year, and their means are computed:
 
 <<echo=FALSE>>=
@@ -247,11 +261,18 @@ aggregate(pcp ~ year, sha.data, FUN = length)
 
 The Shanghai data, it seems, has the opposite problem of the THE data. The years 2012 and 2013 have far fewer sampled universities, so in those years only a select few elite schools were ranked. This is what caused the significant mean score inflation for those two years.
 
+To check for skewed attributes, the following table shows the median of each attribute by year. If any of these medians significantly differ from their respective means, then the data in that column is skewed.
+<<echo=FALSE>>=
+aggregate(cbind(alumni, award, hici, ns, pub, pcp) ~ year, sha.data, FUN = median)
+@
+
+A cursory glance at the medians show no skewed data attributes. Once again, a matrix of median-to-mean ratios was computed to compare the medians and the means, and no significant differences were found.
 
 \subsubsection{CWUR Data}
+
 For the CWUR data, the final simple table dataset for this report, the same strategy will be used to gain some cursory insight into the data. The following matrix represents the year-by-year averages for every attribute in the CWUR dataset.
 <<echo=FALSE>>=
-aggregate(cbind(alumni_employment, quality_of_faculty, publications, influence, citations, broad_impact, patents, score) ~ year, cwu.data, FUN = length)
+aggregate(cbind(alumni_employment, quality_of_faculty, publications, influence, citations, broad_impact, patents, score) ~ year, cwu.data, FUN = mean)
 @
 
 From a quick glance at the matrix, it looks like there are two sets of year pairs during which the rankings were very similar. The scores from 2012 and 2013 are nearly identical, and the same is true for 2014 and 2015. From this, two things are apparent. First, it seems that the CWUR data is the most constant over time. Second, it appears that one of two things occurred between 2013 and 2014: either the scoring system changed, or the number of universities sampled dramatically increased. To check which of those is true, the following matrix shows the number of universities scored each year over the course of the 4 years.
@@ -264,22 +285,54 @@ It appears that the latter of the possibilities occurred: in 2014, the number of
 
 
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+
 Because the supplimentary attainment and expenditure data was reduced to single-dimensional data with an artificial (unitless) scale, the only meaningful summary of those datasets is a simple summary with means and quantiles of the new scale of data.
 
 For the educational attainment dataset, the distribution of scores is as follows:
 <<echo=FALSE>>=
 summary(att.data$X2005)
 @
+
 Recall this data is two column table data, where the first column is the name of a country and the second column is an aggregate educational attainment score for that country, computed from the multi-dimensional data in the educational attainment dataset \textsuperscript{[4]}.
 
 For the educational expenditure data, the distribution of scores is as follows:
 <<echo=FALSE>>=
-summary(exp.data$X2005)
+summary(exp.data$mean)
 @
+
 This data, like the attainment dataset, is a two column table, where the first column is the name of a country and the second column is an aggregate public university expenditure score, computed from the multi-year educational expenditure dataset \textsuperscript{[5]}.
 
 \subsection{Attribute Visualizations}
-vis
+
+\subsubsection{Times Higher Education Data}
+
+\textbf{\textit{THE Data Total Score Distribution}} \\
+The first important metric to visualize for the THE dataset is the distribution of total scores for the schools surveyed. The following chart is a histogram of the total scores of all schools included in the 2016 THE collegiate ranking report.
+
+<<echo=FALSE, fig=TRUE>>=
+single.year <- the.data[the.data$year == 2016,]
+hist(single.year$total_score, main = "Histogram of THE Total Scores in 2016", col="blanchedalmond", xlab = "Total Score")
+@
+
+What the above histogram indicates is that the total score of a university, as measured by THE, is unimodally distributed and heavily left skewed. There is a very noticeable drop-off in frequency when total score goes from the 60-65 range to the 65-70 range. What this indicates is that the THE dataset has a clear set of elite universities. It also provides a simple cutoff to define a class of 'top-tier' universities. Such a cutoff seems to exist at the 65 total score mark. \\
+
+\textbf{\textit{THE Data Individual Score Distributions}} \\
+
+To identify the distributions of the remaining sub-scores of the THE data, a violin plot will be used to visualize the teaching, international, research, and citation attributes of each university. The violin plot is built using the CRAN package 'vioplot' \textsuperscript{[9]}.
+
+<<echo=FALSE, fig=TRUE>>=
+library(vioplot)
+vioplot(single.year$teaching, single.year$international, single.year$research, single.year$citations, col='darkseagreen1', names = c("Teaching", "Intnl.", "Research", "Citations"))
+title("Violin Plot of Scoring Data")
+@
+
+The violin plots of the score distributions shows, interestingly, that teaching and research seem to follow somewhat normal distributions which have been cut off by a lower bound, while international and citations scores follow a nearly-uniform distribution. The teaching and research attributes seem to fit the working understanding that there are very few universities in a 'top-tier,' which is reflected by the narrowness of those two violins. The international and citations violins' broadness at the upper end of the scoring spectrum may indicate that international and citation scores are a poor predictor of overall score and overall rank, because there is no elite group based on international and citation scores.
+
+
+\subsubsection{Shanghai Data}
+\subsubsection{CWUR Data}
+\subsubsection{Supplimentary Educational Attainment and Expenditure Data}
+
 
 \subsection{SMU: A Case Study}
 SMU
@@ -301,14 +354,18 @@ geography
   14(6), 1-27. URL http://www.jstatsoft.org/v14/i06/
 \bibitem{adjunct} "Background Facts on Contingent Faculty." \textit{AAUP}. American Association of University Professors, n.d. Web. 12 Sept. 2016.
 \bibitem{thepub} THE Citation Data, "Citation Averages, 2000-2010, by Fields and Years." THE. Times Higher Education, 22 May 2015. Web. 13 Sept. 2016.
-%8 so far
+\bibitem{vioplot} Daniel Adler (2005). vioplot: Violin plot. R package version 0.2. http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler
+%9 so far
 \end{thebibliography} 
 
 \end{document}
 
 
 
-%Notes: https://gist.github.com/cdesante/4252133 for mapping USA
+%Notes: 
+%Mapping by state in USA: https://gist.github.com/cdesante/4252133 for mapping USA
+%State-to-school map: http://ope.ed.gov/accreditation/GetDownLoadFile.aspx
 %Data Source: https://www.kaggle.com/mylesoneill/world-university-rankings
+%Use this reference: http://colleges.usnews.rankingsandreviews.com/best-colleges/smu-3613
 
               
