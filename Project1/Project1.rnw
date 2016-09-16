@@ -332,10 +332,64 @@ The violin plots of the score distributions shows, interestingly, that teaching 
 
 \subsubsection{Shanghai Data}
 
+\textbf{\textit{Shanghai Data Total Score Distribution}} \\
+Much like for the THE data, the first way to assess the Shanghai data is to draw a histogram of the total scores. If the Shanghai data conforms to the trend seen in the THE data -- that there is a very small set of elite universities with considerably higher scores than the rest of the universities, then this histogram should once again show a heavily left-skewed distribution.
+
+<<echo=FALSE, fig=TRUE>>=
+single.year <- sha.data[sha.data$year == 2015,]
+hist(single.year$pcp, col="blanchedalmond", main = "Histogram of Shanghai Total Scores in 2015", xlab = "Total Score (PCP)")
+@
+
+The historgram, indeed, shows that the Shanghai total score data follows a left-skewed distrbution which conforms to the 'top-tier' model indicated by the THE data. In fact, the Shanghai data seems to have an even more heavily skewed distribution of total scores than the THE data. Very few schools achieved a total score of more than 40. 
+
+Interestingly, the top-15 schools by THE score and the top 15 schools have 8 schools in common. This means that there are 8 schools which fall into the top-tier by both rankings, and 14 schools that fall into the top-tier by one ranking, but not the other.
 
 \subsubsection{CWUR Data}
+
+\textbf{\textit{CWUR Data Total Score Distribution}} \\
+For the final ranking set, the same histogram visualization is used to identify if, in fact, all 3 of the ranking systems follow a left-skewed score distribution with an elite few top-tier schools.
+
+<<echo=FALSE, fig=TRUE>>=
+hist(cwu.data$score, col="blanchedalmond", main="Historgram of CWUR Data Total Scores in 2015", xlab="Total Score")
+@
+
+As was perhaps expected, the CWUR data, much like the Shanghai and THE data, follows a left-skewed distribution which clearly isolates the top-tier universities from the others. To assess if the three rankings identify the same universities as being among the elite, the top 50 universities from each ranking will be combined, and the overlap of the 3 top-50 sets will be assessed. \\
+
+
+\textbf{\textit{Comparison of Top-50 Schools from Each Ranking}} \\
+
+When the top-50 universities from each ranking are selected, 14 of the universities present are top-50 in all 3 rankings, 14 of the universities are present in 2 of the 3 top-50 rankings, and 80 of the 150 universities are in only one of the 3 rankings. What this demonstrates is that the ranking systems are clearly not consistent relative to eachother. This suggests that the ranking process is highly subjective, because any objective ranking system would have a higher incidence of overlap in 3 independent top-50 sets. \\
+
+
 \subsubsection{Supplimentary Educational Attainment and Expenditure Data}
 
+\textbf{\textit{Distribution of Attainment Scores by Country}} \\
+
+To establish an idea for the meaning of the attainment score data (which was artifically constructed from the existing data, and therefore has no underlying unit), a histogram with density lines will be used. Because the data does not come from any known distribution, and is in fact an aggregation of other distributions, it is expected to follow a normal distribution due to the central limit theorem.
+
+<<echo=FALSE, fig=TRUE>>=
+att.ord <- att.data[order(att.data[,2:1]),]
+att.ord <- att.ord[!is.na(att.ord$X2005),]
+hist(att.ord$X2005, prob=TRUE, col="blanchedalmond", main="Distribution of Attainment Scores by Country", xlab="Score")
+lines(density(att.ord$X2005), lwd=2, col="green")
+lines(density(att.ord$X2005, adjust=2), lty="dotted", col="blue", lwd=2)
+@
+
+As expected, the data seems to follow a somewhat-normal distribution. However, it's not a perfectly normal distribution. A simple density plot shows a bi-modal distribution, where a density line with a higher bandwith shows a unimodal distribution. As a result, educational attainment data alone can not be considered a meaningful metric for a country's educational success on its own, because the distribution of the data follows no clear pattern. \\
+
+
+\textbf{\textit{Distribution of Public University Expenditure Scores by Country}} \\
+
+The same methodology will be used for the expenditure score data. Once again, the data is an aggregate of other datasets, and therefore is expected to be normally distributed. 
+
+<<echo=FALSE, fig=TRUE>>=
+exp.ord <- exp.data[!is.na(exp.data$mean),]
+hist(exp.ord$mean, prob=TRUE, col="blanchedalmond",main="Distribution of Expenditure Scores by Country", xlab="Score")
+lines(density(exp.ord$mean), lwd=2, col="green")
+lines(density(exp.ord$mean, adjust=2), lty="dotted", col="blue", lwd=2)
+@
+
+The public university expenditure data appears to me more normalized than the attainment data. However, there is some rightward skew in the data. Nonetheless, both density lines indicate a somewhat normal distribution, which indicates that the expenditure data, much like the attainment data, doesn't follow the top-tier skewed model. This is expected and reasonable, however, as the expenditure and attainment datasets refer to entire countries, not single universities.
 
 \subsection{SMU: A Case Study}
 SMU

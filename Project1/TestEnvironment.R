@@ -57,3 +57,36 @@ hist(single.year$total_score, main = "Histogram of THE Total Scores in 2016", co
 citation('vioplot')
 
 ?vioplot
+
+single.year <- sha.data[sha.data$year == 2015,]
+hist(single.year$pcp, col="blanchedalmond", main = "Histogram of Shanghai Total Scores in 2015", xlab = "Total Score")
+single.year.the <- the.data[the.data$year == 2016,]
+
+schools <- c(single.year[single.year$pcp > 40,]$university_name, single.year.the[single.year.the$total_score > 60,]$university_name)
+
+a <- as.character(single.year[single.year$pcp > 39,]$university_name)
+b <- (single.year.the[single.year.the$total_score > 87,]$university_name)
+
+length(c(a, b))
+length(unique(c(a,b)))
+c(a,b)
+
+length(schools)
+length(unique(schools))
+
+single.year.cwu <- cwu.data[cwu.data$year == max(cwu.data$year),]
+single.year.the <- the.data[the.data$year == max(the.data$year),]
+single.year.sha <- sha.data[sha.data$year == max(sha.data$year),]
+
+a <- as.character(single.year.sha[single.year.sha$pcp > 30,]$university_name)
+b <- (single.year.the[single.year.the$total_score > 69,]$university_name)
+c <- as.character(single.year.cwu[single.year.the$total_score > 79,]$institution)
+
+length(c(a, b, c))
+table(table(c(a, b, c)))
+
+
+exp.ord <- exp.data[!is.na(exp.data$mean),]
+hist(exp.ord$mean, prob=TRUE, col="blanchedalmond",main="Distribution of Expenditure Scores by Country", xlab="Score")
+lines(density(exp.ord$mean), lwd=2, col="green")
+lines(density(exp.ord$mean, adjust=2), lty="dotted", col="blue", lwd=2)
