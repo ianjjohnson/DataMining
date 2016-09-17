@@ -90,3 +90,33 @@ exp.ord <- exp.data[!is.na(exp.data$mean),]
 hist(exp.ord$mean, prob=TRUE, col="blanchedalmond",main="Distribution of Expenditure Scores by Country", xlab="Score")
 lines(density(exp.ord$mean), lwd=2, col="green")
 lines(density(exp.ord$mean, adjust=2), lty="dotted", col="blue", lwd=2)
+
+the.smu <- the.data[the.data$university_name == "Southern Methodist University",]
+sha.smu <- sha.data[sha.data$university_name == "Southern Methodist University",]
+
+mean(c(the.smu$world_rank, sha.smu$world_rank))
+
+
+
+
+the.data.scaled <- the.data
+
+the.data.scaled$num_students <- scale(the.data$num_students)
+mean(the.data.scaled[the.data.scaled$university_name == "Southern Methodist University",]$num_students)
+
+the.data.scaled$student_staff_ratio <- scale(the.data$student_staff_ratio)
+mean(the.data.scaled[the.data.scaled$university_name == "Southern Methodist University",]$student_staff_ratio)
+
+the.data.scaled$teaching <- scale(the.data$teaching)
+mean(the.data.scaled[the.data.scaled$university_name == "Southern Methodist University",]$teaching)
+
+the.data.scaled$citations <- scale(the.data$citations)
+mean(the.data.scaled[the.data.scaled$university_name == "Southern Methodist University",]$citations)
+
+sha.data.scaled <- sha.data
+
+sha.data.scaled$pub <- scale(sha.data$pub)
+mean(sha.data.scaled[sha.data.scaled$university_name == "Southern Methodist University",]$pub)
+
+sha.data.scaled$alumni <- scale(sha.data$alumni)
+mean(sha.data.scaled[sha.data.scaled$university_name == "Southern Methodist University",]$alumni)

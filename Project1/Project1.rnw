@@ -392,7 +392,42 @@ lines(density(exp.ord$mean, adjust=2), lty="dotted", col="blue", lwd=2)
 The public university expenditure data appears to me more normalized than the attainment data. However, there is some rightward skew in the data. Nonetheless, both density lines indicate a somewhat normal distribution, which indicates that the expenditure data, much like the attainment data, doesn't follow the top-tier skewed model. This is expected and reasonable, however, as the expenditure and attainment datasets refer to entire countries, not single universities.
 
 \subsection{SMU: A Case Study}
-SMU
+
+The next objective is to take a close look at Southern Methodist University and how it measures up to other universities. There are three primary goals for assessing SMU as a university:
+\begin{itemize}
+\item Determine an aggregate ranking for SMU based on scores from all overall rankings
+\item Assess SMU's various strengths and weaknesses using its various individual attribute rankings
+\item Identify what factors would be best for SMU to improve upon in an effort to improve overall ranking
+\end{itemize}
+
+\textbf{\textit{SMU Aggregate Overall Rank}} \\
+
+In order to identify an overall rank for SMU, the SMU world ranks from the datasets will be averaged for every year they were included in the rankings. Internal country rankings will be ignored, as they essentially a direct result of world ranks.
+
+SMU is ranked once in the THE dataset, and 5 times in the Shanghai dataset. The average of these six rankings is 393. This provides a lower-bound for the ranking that SMU truly has. Since SMU is ommitted in a number of rankings, it can be inferred that SMU ranks too low to appear on those rankings. Therefore, SMU's aggregate rank has to be at least 393. In the optimistic assumption case, where SMU is assummed to be ranked just below the cutoff to make each year's ranking, the new average ranking is 442. This average is calculated using the average of the existing rankings, and replacing missing rankings with the equivalent ranking of a university who fell one school short of being included on the list.
+
+It is difficult to provide a pessimistic estimate for ranking, as an ommitted data point could possibly range from the most ideal ranking to the worst ranking, where SMU is ranked as the last in the world. Because such an estimate would be difficult and wildly inaccurate, the optimistic rank of 442 will be used. \\
+
+\textbf{\textit{SMU Aggregate Individual Scores}} \\
+
+For each of the non-ranking scores, SMU's aggregate score will be calculated on a normalized scale of each attribute. Therefore, a score of 1 would represent SMU being 1 standard deviation above average, a score of -1 would indicate that SMU is 1 standard deviation below average, and so on. The attributes included in the table below are a combination of those found in the THE and Shanghai datasets, and in some cases are an aggregate of the two datasets. \\
+\begin{center}
+\begin{tabular}{| l | c |}
+\hline
+Attribute & Score \\ 
+\hline
+Num\textunderscore Students & $0.0107$\\
+Student\textunderscore Staff\textunderscore Ratio  & $-0.4291$\\
+Teaching  & $-1.0922$\\
+Citations  & $0.2746$\\
+Alumni  & $0.3656$\\
+\hline
+\end{tabular}
+\end{center}
+\vspace{5mm} 
+This table shows that SMU has slightly above average student counts, citations scores, and alumni scores, and also has fewer students per faculty member, but that SMU's principal weakness is a very low teaching score. \\
+
+\textbf{\textit{How to Improve SMU's Overall Rank}} \\
 
 \subsection{Attribute Relationships}
 relats
@@ -421,6 +456,7 @@ geography
 
 
 %Notes: 
+%@TODO: Switch all figures to include fig number and refs
 %Mapping by state in USA: https://gist.github.com/cdesante/4252133 for mapping USA
 %State-to-school map: http://ope.ed.gov/accreditation/GetDownLoadFile.aspx
 %Data Source: https://www.kaggle.com/mylesoneill/world-university-rankings
