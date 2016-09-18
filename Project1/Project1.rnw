@@ -222,17 +222,23 @@ To take a first look at the THE data, the data is aggregated by column per year 
 <<echo=FALSE>>=
 aggregate(cbind(teaching,international, research, citations, income, total_score, num_students, student_staff_ratio) ~ year, the.data, FUN = mean)
 @
+\begin{center}
+\textit{Figure 2.1 - Mean scores per year for THE data}
+\end{center}
 
-What this table shows is that, in general, THE scores have gone down over the course of the last 5 years. At this point, it's not possible to identify if this is caused by decreasing qualities of universities or by increasing standards from the Times Higher Education scorers.
+Figure 2.1 shows is that, in general, THE scores have gone down over the course of the last 5 years. At this point, it's not possible to identify if this is caused by decreasing qualities of universities or by increasing standards from the Times Higher Education scorers.
 
-This table also shows an increasing average student-to-staff ratio over the last 5 years among sampled universities. However, the average number of students is not decreasing significantly. This suggests that the size of the faculty of ranked universities may be decreasing. One possible explaination for this would be the increased prevalence of adjunct faculty members in the united states. The AAUP (American Association of University Professors) recently claimed that over half of US University professors are part time \textsuperscript{[7]}. This seems to suggest that the increasing number of adjunct faculty is responsible for the rise in student-to-staff ratio.
+Figure 2.1 also shows an increasing average student-to-staff ratio over the last 5 years among sampled universities. However, the average number of students is not decreasing significantly. This suggests that the size of the faculty of ranked universities may be decreasing. One possible explaination for this would be the increased prevalence of adjunct faculty members in the united states. The AAUP (American Association of University Professors) recently claimed that over half of US University professors are part time \textsuperscript{[7]}. This seems to suggest that the increasing number of adjunct faculty is responsible for the rise in student-to-staff ratio.
 
 An additional possible reason is that in 2016, nearly 800 universities were included in the dataset, while in 2011 only 200 were included. 
-The following table shows the number of samples for the student-to-staff ratio year-by-year:
+Figure 2.2 shows the number of samples for the student-to-staff ratio year-by-year:
 
 <<echo=FALSE>>=
 aggregate(student_staff_ratio ~ year, the.data, FUN = length)
 @
+\begin{center}
+\textit{Figure 2.2 - Sample size by year for THE data}
+\end{center}
 
 Because so many additional schools were sampled, it's possible that the additional, lower-ranked schools considerably increased the average student-to-staff ratio. This will be explored more in later sections.
 
@@ -240,8 +246,11 @@ To quickly identify if any of the measured attributes are heavily skewed, the fo
 <<echo=FALSE>>=
 aggregate(cbind(teaching,international, research, citations, income, total_score, num_students, student_staff_ratio) ~ year, the.data, FUN = median)
 @
+\begin{center}
+\textit{Figure 2.3 - Median scores per year for THE data}
+\end{center}
 
-A novel look at the medians show that there is no significantly skewed data. A table of the ratio of the median and modes of the data show no significant differences for any data attribute. The table is ommited from this report for the sake of brevity.
+A novel look at the medians in figure 2.3 show that there is no significantly skewed data. A table of the ratio of the median and modes of the data show no significant differences for any data attribute. The table is ommited from this report for the sake of brevity.
 
 \subsubsection{Shanghai Data}
 
@@ -250,36 +259,51 @@ To take a cursory look at the Shanghai dataset, the various statistics from the 
 <<echo=FALSE>>=
 aggregate(cbind(alumni, award, hici, ns, pub, pcp) ~ year, sha.data, FUN = mean)
 @
+\begin{center}
+\textit{Figure 2.4 - Mean scores per year for Shanghai data}
+\end{center}
 
-The first insight from this matrix is that, in general, aggregate scores (\textit{pcp}) have not changed significantly over the course of the years sampled. However, individual statistics have changed somewhat. The \textit{alumni} score, for example, has steadily decreased over the years, while the \textit{pub} score has steadily increased. Interestingly, citation averages for U.S universities by-year have been decreasing since 2001 \textsuperscript{[8]}. One possible explanation of the increasing citation scores is that the scores are cumulative citation scores, as opposed to year-by-year scores. The result of such a measurement system would be that scores have a tendency to increase over time. The principle issue with such a system is that it would heavily favor universities that were elite in the past, and lose focus on which universities are producing the best research on a year-to-year basis. The Shanhai dataset provides no documentation on the meaning of this attribute to discern which of these two measurement strategies is being used \textsuperscript{[2]}.
+The first insight from figure 2.4 is that, in general, aggregate scores (\textit{pcp}) have not changed significantly over the course of the years sampled. However, individual statistics have changed somewhat. The \textit{alumni} score, for example, has steadily decreased over the years, while the \textit{pub} score has steadily increased. Interestingly, citation averages for U.S universities by-year have been decreasing since 2001 \textsuperscript{[8]}. One possible explanation of the increasing citation scores is that the scores are cumulative citation scores, as opposed to year-by-year scores. The result of such a measurement system would be that scores have a tendency to increase over time. The principle issue with such a system is that it would heavily favor universities that were elite in the past, and lose focus on which universities are producing the best research on a year-to-year basis. The Shanhai dataset provides no documentation on the meaning of this attribute to discern which of these two measurement strategies is being used \textsuperscript{[2]}.
 
-The second major insight that this matrix indicates is that scores were very high in 2012 and 2013. These seem well outside the norm. To examine why, the following table shows the number of universities sampled, year-by-year.
+The second major insight that figure 2.4 indicates is that scores were very high in 2012 and 2013. These seem well outside the norm. To examine why, the following table shows the number of universities sampled, year-by-year.
 
 <<echo=FALSE>>=
 aggregate(pcp ~ year, sha.data, FUN = length)
 @
+\begin{center}
+\textit{Figure 2.5 - Sample size by year for the Shanghai data}
+\end{center}
 
-The Shanghai data, it seems, has the opposite problem of the THE data. The years 2012 and 2013 have far fewer sampled universities, so in those years only a select few elite schools were ranked. This is what caused the significant mean score inflation for those two years.
+Figure 2.5 shows that the Shanghai data has the opposite problem of the THE data. The years 2012 and 2013 have far fewer sampled universities, so in those years only a select few elite schools were ranked. This is what caused the significant mean score inflation for those two years.
 
-To check for skewed attributes, the following table shows the median of each attribute by year. If any of these medians significantly differ from their respective means, then the data in that column is skewed.
+To check for skewed attributes, the figure 2.6 shows the median of each attribute by year. If any of these medians significantly differ from their respective means, then the data in that column is skewed.
 <<echo=FALSE>>=
 aggregate(cbind(alumni, award, hici, ns, pub, pcp) ~ year, sha.data, FUN = median)
 @
+\begin{center}
+\textit{Figure 2.6 - Median scores per year for Shanghai data}
+\end{center}
 
-A cursory glance at the medians show no skewed data attributes. Once again, a matrix of median-to-mean ratios was computed to compare the medians and the means, and no significant differences were found.
+A cursory glance at the medians in figure 2.6 show no skewed data attributes. Once again, a matrix of median-to-mean ratios was computed to compare the medians and the means, and no significant differences were found.
 
 \subsubsection{CWUR Data}
 
-For the CWUR data, the final simple table dataset for this report, the same strategy will be used to gain some cursory insight into the data. The following matrix represents the year-by-year averages for every attribute in the CWUR dataset.
+For the CWUR data, the final simple table dataset for this report, the same strategy will be used to gain some cursory insight into the data. Figure 2.7 indicates the year-by-year averages for every attribute in the CWUR dataset.
 <<echo=FALSE>>=
 aggregate(cbind(alumni_employment, quality_of_faculty, publications, influence, citations, broad_impact, patents, score) ~ year, cwu.data, FUN = mean)
 @
+\begin{center}
+\textit{Figure 2.7 - Mean scores per year for CWUR data}
+\end{center}
 
-From a quick glance at the matrix, it looks like there are two sets of year pairs during which the rankings were very similar. The scores from 2012 and 2013 are nearly identical, and the same is true for 2014 and 2015. From this, two things are apparent. First, it seems that the CWUR data is the most constant over time. Second, it appears that one of two things occurred between 2013 and 2014: either the scoring system changed, or the number of universities sampled dramatically increased. To check which of those is true, the following matrix shows the number of universities scored each year over the course of the 4 years.
+In figure 2.7, it seems that there are two sets of year pairs during which the rankings were very similar. The scores from 2012 and 2013 are nearly identical, and the same is true for 2014 and 2015. From this, two things are apparent. First, it seems that the CWUR data is the most constant over time. Second, it appears that one of two things occurred between 2013 and 2014: either the scoring system changed, or the number of universities sampled dramatically increased. To check which of those is true, figure 2.8 shows the number of universities scored each year over the course of the 4 years.
 
 <<echo=FALSE>>=
 aggregate(score ~ year, cwu.data, FUN = length)
 @
+\begin{center}
+\textit{Figure 2.8 - Sample size by year for the CWUR data}
+\end{center}
 
 It appears that the latter of the possibilities occurred: in 2014, the number of universities sampled increased ten-fold.
 
@@ -288,17 +312,23 @@ It appears that the latter of the possibilities occurred: in 2014, the number of
 
 Because the supplimentary attainment and expenditure data was reduced to single-dimensional data with an artificial (unitless) scale, the only meaningful summary of those datasets is a simple summary with means and quantiles of the new scale of data.
 
-For the educational attainment dataset, the distribution of scores is as follows:
+For the educational attainment dataset, the distribution of scores is shown in figure 2.9.
 <<echo=FALSE>>=
 summary(att.data$X2005)
 @
+\begin{center}
+\textit{Figure 2.9 - Distribution of educational attainment scores}
+\end{center}
 
 Recall this data is two column table data, where the first column is the name of a country and the second column is an aggregate educational attainment score for that country, computed from the multi-dimensional data in the educational attainment dataset \textsuperscript{[4]}.
 
-For the educational expenditure data, the distribution of scores is as follows:
+For the educational expenditure data, the distribution of scores is shown in figure 2.10
 <<echo=FALSE>>=
 summary(exp.data$mean)
 @
+\begin{center}
+\textit{Figure 2.10 - Distribution of educational expenditure scores}
+\end{center}
 
 This data, like the attainment dataset, is a two column table, where the first column is the name of a country and the second column is an aggregate public university expenditure score, computed from the multi-year educational expenditure dataset \textsuperscript{[5]}.
 
@@ -307,15 +337,18 @@ This data, like the attainment dataset, is a two column table, where the first c
 \subsubsection{Times Higher Education Data}
 
 \textbf{\textit{THE Data Total Score Distribution}} \\
-The first important metric to visualize for the THE dataset is the distribution of total scores for the schools surveyed. The following chart is a histogram of the total scores of all schools included in the 2016 THE collegiate ranking report.
+The first important metric to visualize for the THE dataset is the distribution of total scores for the schools surveyed. Figure 3.1 is a histogram of the total scores of all schools included in the 2016 THE collegiate ranking report.
 
 <<echo=FALSE, fig=TRUE>>=
 single.year <- the.data[the.data$year == 2016,]
 hist(single.year$total_score, main = "Histogram of THE Total Scores in 2016", col="blanchedalmond", xlab = "Total Score")
 lines(density(single.year$total_score), col="red")
 @
+\begin{center}
+\textit{Figure 3.1 - Distribution of THE total scores}
+\end{center}
 
-The above histogram indicates that the total score of a university, as measured by THE, is unimodally distributed and heavily left skewed. There is a very noticeable drop-off in frequency when total score goes from the 60-65 range to the 65-70 range. What this indicates is that the THE dataset has a clear set of elite universities. It also provides a simple cutoff to define a class of 'top-tier' universities. Such a cutoff seems to exist at the 65 total score mark. \\
+Figure 3.1 indicates that the total score of a university, as measured by THE, is unimodally distributed and heavily left skewed. There is a very noticeable drop-off in frequency when total score goes from the 60-65 range to the 65-70 range. What this indicates is that the THE dataset has a clear set of elite universities. It also provides a simple cutoff to define a class of 'top-tier' universities. Such a cutoff seems to exist at the 65 total score mark. \\
 
 \textbf{\textit{THE Data Individual Score Distributions}} \\
 
@@ -326,21 +359,27 @@ library(vioplot)
 vioplot(single.year$teaching, single.year$international, single.year$research, single.year$citations, col='darkseagreen1', names = c("Teaching", "Intnl.", "Research", "Citations"))
 title("Violin Plot of Scoring Data")
 @
+\begin{center}
+\textit{Figure 3.2 - Distributions of individual THE scores}
+\end{center}
 
-The violin plots of the score distributions shows, interestingly, that teaching and research seem to follow somewhat normal distributions which have been cut off by a lower bound, while international and citations scores follow a nearly-uniform distribution. The teaching and research attributes seem to fit the working understanding that there are very few universities in a 'top-tier,' which is reflected by the narrowness of those two violins. The international and citations violins' broadness at the upper end of the scoring spectrum may indicate that international and citation scores are a poor predictor of overall score and overall rank, because there is no elite group based on international and citation scores.
+Figure 3.2 shows, interestingly, that teaching and research seem to follow somewhat normal distributions which have been cut off by a lower bound, while international and citations scores follow a nearly-uniform distribution. The teaching and research attributes seem to fit the working understanding that there are very few universities in a 'top-tier,' which is reflected by the narrowness of those two violins. The international and citations violins' broadness at the upper end of the scoring spectrum may indicate that international and citation scores are a poor predictor of overall score and overall rank, because there is no elite group based on international and citation scores.
 
 
 \subsubsection{Shanghai Data}
 
 \textbf{\textit{Shanghai Data Total Score Distribution}} \\
-Much like for the THE data, the first way to assess the Shanghai data is to draw a histogram of the total scores. If the Shanghai data conforms to the trend seen in the THE data -- that there is a very small set of elite universities with considerably higher scores than the rest of the universities, then this histogram should once again show a heavily left-skewed distribution.
+Much like for the THE data, the first way to assess the Shanghai data is to draw a histogram of the total scores. If the Shanghai data conforms to the trend seen in the THE data -- that there is a very small set of elite universities with considerably higher scores than the rest of the universities, then figure 3.3 should once again show a heavily left-skewed distribution.
 
 <<echo=FALSE, fig=TRUE>>=
 single.year <- sha.data[sha.data$year == 2015,]
 hist(single.year$pcp, col="blanchedalmond", main = "Histogram of Shanghai Total Scores in 2015", xlab = "Total Score (PCP)")
 @
+\begin{center}
+\textit{Figure 3.3 - Distribution of Shanghai total scores}
+\end{center}
 
-The historgram, indeed, shows that the Shanghai total score data follows a left-skewed distrbution which conforms to the 'top-tier' model indicated by the THE data. In fact, the Shanghai data seems to have an even more heavily skewed distribution of total scores than the THE data. Very few schools achieved a total score of more than 40. 
+Figure 3.3, indeed, shows that the Shanghai total score data follows a left-skewed distrbution which conforms to the 'top-tier' model indicated by the THE data. In fact, the Shanghai data seems to have an even more heavily skewed distribution of total scores than the THE data. Very few schools achieved a total score of more than 40. 
 
 Interestingly, the top-15 schools by THE score and the top 15 schools have 8 schools in common. This means that there are 8 schools which fall into the top-tier by both rankings, and 14 schools that fall into the top-tier by one ranking, but not the other.
 
@@ -350,10 +389,13 @@ Interestingly, the top-15 schools by THE score and the top 15 schools have 8 sch
 For the final ranking set, the same histogram visualization is used to identify if, in fact, all 3 of the ranking systems follow a left-skewed score distribution with an elite few top-tier schools.
 
 <<echo=FALSE, fig=TRUE>>=
-hist(cwu.data$score, col="blanchedalmond", main="Historgram of CWUR Data Total Scores in 2015", xlab="Total Score")
+hist(cwu.data$score, col="blanchedalmond", main="Histogram of CWUR Data Total Scores in 2015", xlab="Total Score")
 @
+\begin{center}
+\textit{Figure 3.4 - Distribution of CWUR total scores}
+\end{center}
 
-As was perhaps expected, the CWUR data, much like the Shanghai and THE data, follows a left-skewed distribution which clearly isolates the top-tier universities from the others. To assess if the three rankings identify the same universities as being among the elite, the top 50 universities from each ranking will be combined, and the overlap of the 3 top-50 sets will be assessed. \\
+Figure 3.4 shows that the CWUR data, much like the Shanghai and THE data, follows a left-skewed distribution which clearly isolates the top-tier universities from the others. To assess if the three rankings identify the same universities as being among the elite, the top 50 universities from each ranking will be combined, and the overlap of the 3 top-50 sets will be assessed. \\
 
 
 \textbf{\textit{Comparison of Top-50 Schools from Each Ranking}} \\
@@ -365,7 +407,7 @@ When the top-50 universities from each ranking are selected, 14 of the universit
 
 \textbf{\textit{Distribution of Attainment Scores by Country}} \\
 
-To establish an idea for the meaning of the attainment score data (which was artifically constructed from the existing data, and therefore has no underlying unit), a histogram with density lines will be used. Because the data does not come from any known distribution, and is in fact an aggregation of other distributions, it is expected to follow a normal distribution due to the central limit theorem.
+To establish an idea for the meaning of the attainment score data (which was artifically constructed from the existing data, and therefore has no underlying unit), a histogram with density lines is used. Because the data does not come from any known distribution, and is in fact an aggregation of other distributions, it is expected to follow a normal distribution due to the central limit theorem.
 
 <<echo=FALSE, fig=TRUE>>=
 att.ord <- att.data[order(att.data[,2:1]),]
@@ -374,13 +416,16 @@ hist(att.ord$X2005, prob=TRUE, col="blanchedalmond", main="Distribution of Attai
 lines(density(att.ord$X2005), lwd=2, col="green")
 lines(density(att.ord$X2005, adjust=2), lty="dotted", col="blue", lwd=2)
 @
+\begin{center}
+\textit{Figure 3.5 - Distribution of educational attainment scores}
+\end{center}
 
-As expected, the data seems to follow a somewhat-normal distribution. However, it's not a perfectly normal distribution. A simple density plot shows a bi-modal distribution, where a density line with a higher bandwith shows a unimodal distribution. As a result, educational attainment data alone can not be considered a meaningful metric for a country's educational success on its own, because the distribution of the data follows no clear pattern. \\
+As expected, figure 3.5 the data seems to follow a somewhat-normal distribution. However, it's not a perfectly normal distribution. A simple density line shows a bi-modal distribution, where a density line with a higher bandwith shows a unimodal distribution. As a result, educational attainment data alone can not be considered a meaningful metric for a country's educational success on its own, because the distribution of the data follows no clear pattern. \\
 
 
 \textbf{\textit{Distribution of Public University Expenditure Scores by Country}} \\
 
-The same methodology will be used for the expenditure score data. Once again, the data is an aggregate of other datasets, and therefore is expected to be normally distributed. 
+The same methodology is used for the expenditure score data. Once again, the data is an aggregate of other datasets, and therefore is expected to be normally distributed. 
 
 <<echo=FALSE, fig=TRUE>>=
 exp.ord <- exp.data[!is.na(exp.data$mean),]
@@ -388,8 +433,11 @@ hist(exp.ord$mean, prob=TRUE, col="blanchedalmond",main="Distribution of Expendi
 lines(density(exp.ord$mean), lwd=2, col="green")
 lines(density(exp.ord$mean, adjust=2), lty="dotted", col="blue", lwd=2)
 @
+\begin{center}
+\textit{Figure 3.6 - Distribution of educational expenditure scores}
+\end{center}
 
-The public university expenditure data appears to me more normalized than the attainment data. However, there is some rightward skew in the data. Nonetheless, both density lines indicate a somewhat normal distribution, which indicates that the expenditure data, much like the attainment data, doesn't follow the top-tier skewed model. This is expected and reasonable, however, as the expenditure and attainment datasets refer to entire countries, not single universities.
+The public university expenditure data appears to me more normalized than the attainment data, as shown by figure 3.6. However, there is some rightward skew in the data. Nonetheless, both density lines indicate a somewhat normal distribution, which indicates that the expenditure data, much like the attainment data, doesn't follow the top-tier skewed model. This is expected and reasonable, however, as the expenditure and attainment datasets refer to entire countries, not single universities.
 
 \subsection{SMU: A Case Study}
 
@@ -402,11 +450,11 @@ The next objective is to take a close look at Southern Methodist University and 
 
 \textbf{\textit{SMU Aggregate Overall Rank}} \\
 
-In order to identify an overall rank for SMU, the SMU world ranks from the datasets will be averaged for every year they were included in the rankings. Internal country rankings will be ignored, as they essentially a direct result of world ranks.
+In order to identify an overall rank for SMU, the SMU world ranks from the datasets are averaged for every year they were included in the rankings. Internal country rankings are ignored, as they essentially a direct result of world ranks.
 
 SMU is ranked once in the THE dataset, and 5 times in the Shanghai dataset. The average of these six rankings is 393. This provides a lower-bound for the ranking that SMU truly has. Since SMU is ommitted in a number of rankings, it can be inferred that SMU ranks too low to appear on those rankings. Therefore, SMU's aggregate rank has to be at least 393. In the optimistic assumption case, where SMU is assummed to be ranked just below the cutoff to make each year's ranking, the new average ranking is 442. This average is calculated using the average of the existing rankings, and replacing missing rankings with the equivalent ranking of a university who fell one school short of being included on the list.
 
-It is difficult to provide a pessimistic estimate for ranking, as an ommitted data point could possibly range from the most ideal ranking to the worst ranking, where SMU is ranked as the last in the world. Because such an estimate would be difficult and wildly inaccurate, the optimistic rank of 442 will be used. \\
+It is difficult to provide a pessimistic estimate for ranking, as an ommitted data point could possibly range from the most ideal ranking to the worst ranking, where SMU is ranked as the last in the world. Because such an estimate would be difficult and wildly inaccurate, the optimistic rank of 442 is used. \\
 
 \textbf{\textit{SMU Aggregate Individual Scores}} \\
 
@@ -424,12 +472,15 @@ Alumni  & $0.3656$\\
 \hline
 \end{tabular}
 \end{center}
+\begin{center}
+\textit{Figure 4.1 - SMU aggregate scores}
+\end{center}
 \vspace{5mm} 
-This table shows that SMU has slightly above average student counts, citations scores, and alumni scores, and also has fewer students per faculty member, but that SMU's principal weakness is a very low teaching score. \\
+Figure 4.1 shows that SMU has slightly above average student counts, citations scores, and alumni scores, and also has fewer students per faculty member, but that SMU's principal weakness is a very low teaching score. \\
 
 \textbf{\textit{How to Improve SMU's Overall Rank}} \\
 
-In order to identify what attributes are most inhibitive to SMU earning a higher ranking, the normalized mean scores from the attributes computed above for SMU is computed for the average of the top-20 schools in the THE and Shanghai datasets.
+In order to identify what attributes are most inhibitive to SMU earning a higher ranking, the normalized mean scores from the attributes computed above for SMU is computed for the average of the top-20 schools in the THE and Shanghai datasets in figure 4.2.
 
 \begin{center}
 \begin{tabular}{| l | c |}
@@ -444,9 +495,12 @@ Alumni  & $2.9714$\\
 \hline
 \end{tabular}
 \end{center}
+\begin{center}
+\textit{Figure 4.2 - Top-20 aggregate scores}
+\end{center}
 \vspace{5mm} 
 
-The two factors that stand out as potential improvements for SMU are the teaching and publications scores. SMU does not vary significantly from the top 20 schools in terms of number of students, and it has an only slightly higher student-to-staff ratio, but it falls more than 4 standard deviations below the top-20 average in terms of teaching, and 1.5 standard deviations below the top-20 average in terms of citations. Therefore, it is in SMU's best interest to focus on improving teaching and research. This means that, for SMU to improve their rank, they need to turn their focus toward catering toward the interests of their existing faculty members and attracting strong new faculty members. This is highly opposed to SMU's current operational model, which has a strong focus on athletics and aesthetics.
+In figure 4.2, the two factors that stand out as potential improvements for SMU are the teaching and publications scores. SMU does not vary significantly from the top 20 schools in terms of number of students, and it has an only slightly higher student-to-staff ratio, but it falls more than 4 standard deviations below the top-20 average in terms of teaching, and 1.5 standard deviations below the top-20 average in terms of citations. Therefore, it is in SMU's best interest to focus on improving teaching and research. This means that, for SMU to improve their rank, they need to turn their focus toward catering toward the interests of their existing faculty members and attracting strong new faculty members. This is highly opposed to SMU's current operational model, which has a strong focus on athletics and aesthetics.
 
 \subsection{Attribute Relationships}
 relats
