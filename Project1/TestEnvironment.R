@@ -178,3 +178,109 @@ cwu.pca <- prcomp(cwu.data[4:10],
                   center = TRUE,
                   scale. = TRUE) 
 plot(cwu.pca, type="l", main = "Variance Explained by Principal Components of Shanghai Scores")
+
+get_state <- function(school){
+    return(as.character(acc[acc$Institution_Name == school,]$Institution_State)[1])
+}
+
+
+
+
+
+as.character(get_state("Southern Methodist University"))[1]
+
+require(maps)
+require(ggplot2)
+
+library(RColorBrewer)
+
+abb2state <- function(name, convert = F, strict = F){
+  data(state)
+  # state data doesn't include DC
+  state = list()
+  state[['name']] = c(state.name,"District Of Columbia")
+  state[['abb']] = c(state.abb,"DC")
+  
+  if(convert) state[c(1,2)] = state[c(2,1)]
+  
+  single.a2s <- function(s){
+    if(strict){
+      is.in = tolower(state[['abb']]) %in% tolower(s)
+      ifelse(any(is.in), state[['name']][is.in], NA)
+    }else{
+      # To check if input is in state full name or abb
+      is.in = rapply(state, function(x) tolower(x) %in% tolower(s), how="list")
+      state[['name']][is.in[[ifelse(any(is.in[['name']]), 'name', 'abb')]]]
+    }
+  }
+  sapply(name, single.a2s)
+}
+
+single.year.the.us <- the.data[the.data$country == "United States of America",]
+single.year.the.us['state'] <- sapply(single.year.the.us$university_name, get_state)
+
+states <- aggregate(total_score ~ state, single.year.the.us, mean)
+
+states$state <- states$state[order(states$state)]
+states$state <- abb2state(states$state)
+
+map(database = "state")
+rbPal <- colorRampPalette(c('lightblue1','blue'))
+colors <- rbPal(10)[as.numeric(cut(states$total_score,breaks = 10))]
+map(database = "state",regions = states$state,col = colors,fill=T, boundary = TRUE, add = TRUE)
+
+length(states$state)
+
+?map
+
+rainbow(length(states$total_score))[rank(states$total_score)]
+
+map(database = "state",regions = states$state,col = "blue",fill=T,add=TRUE)
+
+
+
+
+#@@@@@@@@@@@@@@@@@@@@@
+
+
+getstate <- function(school){
+  return(as.character(acc[acc$Institution_Name == school,]$Institution_State)[1])
+}
+
+#Included from https://gist.github.com/ligyxy/acc1410041fe2938a2f5
+abb2state <- function(name, convert = F, strict = F){
+  data(state)
+  # state data doesn't include DC
+  state = list()
+  state[['name']] = c(state.name,"District Of Columbia")
+  state[['abb']] = c(state.abb,"DC")
+  
+  if(convert) state[c(1,2)] = state[c(2,1)]
+  
+  single.a2s <- function(s){
+    if(strict){
+      is.in = tolower(state[['abb']]) %in% tolower(s)
+      ifelse(any(is.in), state[['name']][is.in], NA)
+    }else{
+      # To check if input is in state full name or abb
+      is.in = rapply(state, function(x) tolower(x) %in% tolower(s), how="list")
+      state[['name']][is.in[[ifelse(any(is.in[['name']]), 'name', 'abb')]]]
+    }
+  }
+  sapply(name, single.a2s)
+}
+
+
+single.year.the.us <- the.data[the.data$country == "United States of America",]
+single.year.the.us['state'] <- sapply(single.year.the.us$university_name, getstate)
+
+states <- aggregate(total_score ~ state, single.year.the.us, mean)
+
+states$state <- states$state[order(states$state)]
+states$state <- abb2state(states$state)
+
+map(database = "state")
+rbPal <- colorRampPalette(c('lightblue1','blue'))
+colors <- rbPal(10)[as.numeric(cut(states$total_score,breaks = 10))]
+map(database = "state",regions = states$state,col = colors,fill=T, boundary = TRUE, add = TRUE)
+

@@ -21,9 +21,19 @@
 \vspace*{\fill}
 \begin{center}
   
-      {\Large Abstract}\\[1.0cm]
+ \tableofcontents
+     
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
 
-     This report explores collegiate ranking data from a number of independent ranking organizations and attempts to identify trends among ranking attributes for each university. A number of university attributes are identified as key factors in university ranking, and other attributes are identified as relatively unimportant with respect to ranks. Southern Methodist University is examined in detail, and SMU's weaknesses and strengths are analyzed to identify what factors would be most valuable for the university to optimize in an effort to increase ranking. \\[3.0cm]
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+  
+      {\Large Executive Summary}\\[1.0cm]
+
+     This report explores collegiate ranking data from a number of independent ranking organizations and attempts to identify trends among ranking attributes for each university. A number of university attributes are identified as key factors in university ranking, and other attributes are identified as relatively unimportant with respect to ranks. Southern Methodist University is examined in detail, and SMU's weaknesses and strengths are analyzed to identify what factors would be most valuable for the university to optimize in an effort to increase ranking. Finally, the distribution of top-schools throughout the USA is analyzed and visualized to identify top-performing states and regions.\\[3.0cm]
      
 \end{center}
 \vspace*{\fill}
@@ -588,7 +598,7 @@ print(sha.pca)
 \textit{Figure 5.6 - Shanghai rankings PCA weights}
 \end{center}
 
-Figure 5.6 shows that, interestingly, all 6 rankings seem to be weighted almost equally in the first principle component. This means that, on average, all individual rankings in the Shanghai dataset carry equal weight in deciding on the world rank.
+Figure 5.6 shows that, interestingly, all 6 rankings seem to be weighted almost equally in the first principle component. This means that, on average, all individual rankings in the Shanghai dataset carry equal weight in deciding on the world rank. \\
 
 
 \textbf{\textit{Relationships in the CWUR Dataset}} \\
@@ -602,7 +612,8 @@ corrplot(cor(cwu.data[4:10]), method='ellipse')
 \textit{Figure 5.7 - Rank Correlations of CWUR Individual Rankings}
 \end{center}
 
-Figure 5.6 shows that, much like the Shanghai dataset, individual attribute scores in the CWUR dataset are highly cross-correlated. Interestingly, the only attribute that isn't correlated with the others is the national rank. PCA can, once again, be used, to determine if the dimensionality of the data can be easily reduced.
+
+Figure 5.7 shows that, much like the Shanghai dataset, individual attribute scores in the CWUR dataset are highly cross-correlated. Interestingly, the only attribute that isn't correlated with the others is the national rank. PCA can, once again, be used, to determine if the dimensionality of the data can be easily reduced.
 
 <<echo=False, fig=True>>=
 cwu.pca <- prcomp(cwu.data[4:10],
@@ -616,15 +627,94 @@ plot(cwu.pca, type="l", main = "Variance Explained by Principal Components of CW
 
 Figure 5.8 shows that, while the first principal component of the CWUR ranks does significantly outweigh the others, it doesn't do so to the same degree as the first principal component of the Shanghai dataset. For that reason, it is unlikely that the single-principal-component simplification of the CWUR dataset has the same predictive quality for overall rank.
 
-
 \subsection{Geographic Relationships}
 For each university, GPS data (or some sort of location data) will allow for a visualization of the distribution of top universities around the country, or around the world. The THE dataset can be cross-referenced with a list of universities by state to provide such a visualization. This may provide insight into which states or regions provide the best education for students in universities. This information could help state and federal government organizations, and could also aid in the process of selecting a school for high school seniors.
 
 Data for cross-referencing universities by name and location is gathered from the US Department of Education's Accredidation dataset \textsuperscript{[12]}.
-<<>>=
-
+<<echo=False>>=
+acc <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/accreditation_2016_03.csv')
+acc <- acc[c("Institution_Name", "Institution_State")]
 @
 
+Figure 6.1 shows a map of the United States where each state is color-coded based on the average THE score of universities in the THE rankings in that state. White states represent states where no top universities reside.
+
+The following figures are generated with CRAN packages 'ggplot2' \textsuperscript{[13]} and 'maps' \textsuperscript{[14]}
+
+<<echo=False, fig=True, height=4>>=
+
+require(maps)
+require(ggplot2)
+
+getstate <- function(school){
+  return(as.character(acc[acc$Institution_Name == school,]$Institution_State)[1])
+}
+
+#Included from https://gist.github.com/ligyxy/acc1410041fe2938a2f5
+abb2state <- function(name, convert = F, strict = F){
+  data(state)
+  # state data doesn't include DC
+  state = list()
+  state[['name']] = c(state.name,"District Of Columbia")
+  state[['abb']] = c(state.abb,"DC")
+  
+  if(convert) state[c(1,2)] = state[c(2,1)]
+  
+  single.a2s <- function(s){
+    if(strict){
+      is.in = tolower(state[['abb']]) %in% tolower(s)
+      ifelse(any(is.in), state[['name']][is.in], NA)
+    }else{
+      # To check if input is in state full name or abb
+      is.in = rapply(state, function(x) tolower(x) %in% tolower(s), how="list")
+      state[['name']][is.in[[ifelse(any(is.in[['name']]), 'name', 'abb')]]]
+    }
+  }
+  sapply(name, single.a2s)
+}
+
+
+single.year.the.us <- the.data[the.data$country == "United States of America",]
+single.year.the.us['state'] <- sapply(single.year.the.us$university_name, getstate)
+
+states <- aggregate(total_score ~ state, single.year.the.us, mean)
+
+states$state <- states$state[order(states$state)]
+states$state <- abb2state(states$state)
+
+map(database = "state")
+rbPal <- colorRampPalette(c('lightblue1','blue'))
+colors <- rbPal(10)[as.numeric(cut(states$total_score,breaks = 10))]
+map(database = "state",regions = states$state,col = colors,fill=T, boundary = TRUE, add = TRUE)
+title("THE Scores by State")
+@
+\begin{center}
+\textit{Figure 6.1 - THE Scores of universities in each state}
+\end{center}
+
+Figure 6.1 shows no strong geographic trend, although the Northeast does appear to have a slight edge on the rest of the country when it comes to THE scores. It is also relevant to identify which states have the most top schools. The same visualization can be used, this time color-coded based on number of top schools in the THE ranking.
+
+<<echo=False, fig=True, height=4>>=
+states <- aggregate(total_score ~ state, single.year.the.us, length)
+
+states$state <- states$state[order(states$state)]
+states$state <- abb2state(states$state)
+
+map(database = "state")
+rbPal <- colorRampPalette(c('lightblue1','blue'))
+colors <- rbPal(10)[as.numeric(cut(states$total_score,breaks = 10))]
+map(database = "state",regions = states$state,col = colors,fill=T, boundary = TRUE, add = TRUE)
+title("Number of THE Top Schools by State")
+@
+\begin{center}
+\textit{Figure 6.2 - THE top-schools count in each state}
+\end{center}
+
+Figure 6.2 shows a similar result to figure 6.1. The two figures collectively identify which states have the best higher education systems. Some states, such as North Dakota, perform poorly in both figures, while some schools, like Massachusets, perform exceptionally in both. This can inform decision-making for the federal government, as well as the state governments.
+
+
+\section{Conclusion}
+
+Careful analysis of the analyzed datasets yields a number of relevant insights.
 
 \begin{thebibliography}{9} 
 
@@ -641,7 +731,10 @@ Data for cross-referencing universities by name and location is gathered from th
 \bibitem{intnlmoney} Stephens, Paul. "International Students: Separate but Profitable." Washington Monthly. Washington Monthly, 05 July 2016. Web. 18 Sept. 2016.
 \bibitem{corrplot} Taiyun Wei and Viliam Simko (2016). corrplot: Visualization of a Correlation Matrix. R package version 0.77. https://CRAN.R-project.org/package=corrplot
 \bibitem{cross} "U.S. Department of Education Database of Accredited Postsecondary Institutions and Programs." U.S. Department of Education Database of Accredited Postsecondary Institutions and Programs. DOE, n.d. Web. 18 Sept. 2016.
-%12 so far
+\bibitem{gg} H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2009.
+\bibitem{maps} Original S code by Richard A. Becker, Allan R. Wilks. R version by Ray Brownrigg. Enhancements by Thomas P Minka and Alex Deckmyn. (2015). maps:
+  Draw Geographical Maps. R package version 3.0.1. https://CRAN.R-project.org/package=maps
+%14 so far
 \end{thebibliography} 
 
 \end{document}
