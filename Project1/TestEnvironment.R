@@ -136,3 +136,36 @@ mean(single.year.the$student_staff_ratio)
 mean(single.year.the$teaching)
 mean(single.year.the$citations)
 mean(single.year.sha$alumni)
+
+single.year.cwu <- cwu.data[cwu.data$year == max(cwu.data$year),]
+
+single.year.sha <- sha.data[sha.data$year == max(sha.data$year),]
+
+single.year.the <- the.data[the.data$year == max(the.data$year),]
+plot(single.year.the[c("teaching", "international", "research", "citations")])
+
+sha.pca.ori <- sha.data[4:9]
+sha.pca <- prcomp(sha.pca.ori,
+                  center = TRUE,
+                  scale. = TRUE) 
+plot(sha.pca, type="l", main = "Variance Explained by Principal Components of Shanghai Scores")
+title(xlab="Principle Component")
+
+print(sha.pca)
+
+sha.data['pred'] <- (sha.data$alumni * -0.3974386) + (sha.data$award  * -0.4086869) + (sha.data$hici   * -0.4232831) + (sha.data$ns     * -0.4446542) + (sha.data$pub    * -0.3549227) + (sha.data$pcp    * -0.4119315)
+sha.data.single <- sha.data[sha.data$year == max(sha.data$year),]
+sha.data.single <- sha.data.single[sha.data.single$pred > -200,]
+pred <- sha.data.single$pred + 250
+world_rank <- sha.data.single$world_rank
+world_rank <- order(world_rank)
+world_rank[world_rank %% 50 == 0 & world_rank > 199] <- world_rank[world_rank %% 50 == 0 & world_rank > 199] + 1:50
+plot(pred, world_rank)
+
+inv <- function(x){
+  return(1.0 / x)
+}
+
+plot(single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")])
+
+single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")] <- lapply(single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")], inv)
