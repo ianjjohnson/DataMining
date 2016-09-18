@@ -165,7 +165,16 @@ plot(pred, world_rank)
 inv <- function(x){
   return(1.0 / x)
 }
+single.year.cwu <- cwu.data[cwu.data$year == max(cwu.data$year),]
+#single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")] <- lapply(single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")], inv)
+#single.year.cwu <- single.year.cwu[(single.year.cwu$quality_of_faculty < 0.5 & single.year.cwu$alumni_employment < 0.5 & single.year.cwu$quality_of_education < 0.5 & single.year.cwu$patents < 0.5),]
+plot(single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")], log='xy')
 
-plot(single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")])
 
-single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")] <- lapply(single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")], inv)
+corrplot(cor(cwu.data[4:10]), method='ellipse')
+
+
+cwu.pca <- prcomp(cwu.data[4:10],
+                  center = TRUE,
+                  scale. = TRUE) 
+plot(cwu.pca, type="l", main = "Variance Explained by Principal Components of Shanghai Scores")

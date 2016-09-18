@@ -593,10 +593,38 @@ Figure 5.6 shows that, interestingly, all 6 rankings seem to be weighted almost 
 
 \textbf{\textit{Relationships in the CWUR Dataset}} \\
 
+The CWUR dataset included exclusively rank data; no direct measurement data is present. Figure 5.7 shows a plot of all of the rank correlations of the ranks in the CWUR dataset.
+
+<<echo=False, fig=True>>=
+corrplot(cor(cwu.data[4:10]), method='ellipse')
+@
+\begin{center}
+\textit{Figure 5.7 - Rank Correlations of CWUR Individual Rankings}
+\end{center}
+
+Figure 5.6 shows that, much like the Shanghai dataset, individual attribute scores in the CWUR dataset are highly cross-correlated. Interestingly, the only attribute that isn't correlated with the others is the national rank. PCA can, once again, be used, to determine if the dimensionality of the data can be easily reduced.
+
+<<echo=False, fig=True>>=
+cwu.pca <- prcomp(cwu.data[4:10],
+                  center = TRUE,
+                  scale. = TRUE) 
+plot(cwu.pca, type="l", main = "Variance Explained by Principal Components of CWUR Scores")
+@
+\begin{center}
+\textit{Figure 5.8 - Variation explained by each of the principal components of the Shanghai dataset}
+\end{center}
+
+Figure 5.8 shows that, while the first principal component of the CWUR ranks does significantly outweigh the others, it doesn't do so to the same degree as the first principal component of the Shanghai dataset. For that reason, it is unlikely that the single-principal-component simplification of the CWUR dataset has the same predictive quality for overall rank.
 
 
 \subsection{Geographic Relationships}
-geography
+For each university, GPS data (or some sort of location data) will allow for a visualization of the distribution of top universities around the country, or around the world. The THE dataset can be cross-referenced with a list of universities by state to provide such a visualization. This may provide insight into which states or regions provide the best education for students in universities. This information could help state and federal government organizations, and could also aid in the process of selecting a school for high school seniors.
+
+Data for cross-referencing universities by name and location is gathered from the US Department of Education's Accredidation dataset \textsuperscript{[12]}.
+<<>>=
+
+@
+
 
 \begin{thebibliography}{9} 
 
@@ -612,7 +640,8 @@ geography
 \bibitem{vioplot} Daniel Adler (2005). \textit{vioplot}: Violin plot. R package version 0.2. http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler
 \bibitem{intnlmoney} Stephens, Paul. "International Students: Separate but Profitable." Washington Monthly. Washington Monthly, 05 July 2016. Web. 18 Sept. 2016.
 \bibitem{corrplot} Taiyun Wei and Viliam Simko (2016). corrplot: Visualization of a Correlation Matrix. R package version 0.77. https://CRAN.R-project.org/package=corrplot
-%11 so far
+\bibitem{cross} "U.S. Department of Education Database of Accredited Postsecondary Institutions and Programs." U.S. Department of Education Database of Accredited Postsecondary Institutions and Programs. DOE, n.d. Web. 18 Sept. 2016.
+%12 so far
 \end{thebibliography} 
 
 \end{document}
