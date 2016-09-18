@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage[margin=0.9in]{geometry} 
 \usepackage{enumitem}
+\usepackage{graphicx, subfig}
 \setlist{noitemsep}
 
 \begin{document}
@@ -605,7 +606,8 @@ Figure 5.6 shows that, interestingly, all 6 rankings seem to be weighted almost 
 
 The CWUR dataset included exclusively rank data; no direct measurement data is present. Figure 5.7 shows a plot of all of the rank correlations of the ranks in the CWUR dataset.
 
-<<echo=False, fig=True>>=
+
+<<label=cwucorr, echo=False, fig=True>>=
 corrplot(cor(cwu.data[4:10]), method='ellipse')
 @
 \begin{center}
@@ -714,7 +716,9 @@ Figure 6.2 shows a similar result to figure 6.1. The two figures collectively id
 
 \section{Conclusion}
 
-Careful analysis of the analyzed datasets yields a number of relevant insights.
+Careful analysis of the analyzed datasets yields a number of relevant insights. A number of correlations are identified between various rankings and the directly measured attributes of universities who received those rankings. Distributions of scores are visualized, and an elite-tier university model becomes apparent, where there exists a clearly separated top-tier of universities in many ranking systems. SMU's individual scores are analyzed, and specific ranking improvement methodologies are identified. The United States' universities are distributed geographically, and geographic trends in school ranking and top school density are identified.
+
+Although there is no clear model for how rankings are generated, and no clear-cut path to generating top-ranked universities, many valuable inferences can be made from the datasets provided.
 
 \begin{thebibliography}{9} 
 

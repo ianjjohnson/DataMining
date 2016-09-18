@@ -170,7 +170,6 @@ single.year.cwu <- cwu.data[cwu.data$year == max(cwu.data$year),]
 #single.year.cwu <- single.year.cwu[(single.year.cwu$quality_of_faculty < 0.5 & single.year.cwu$alumni_employment < 0.5 & single.year.cwu$quality_of_education < 0.5 & single.year.cwu$patents < 0.5),]
 plot(single.year.cwu[c("quality_of_education", "alumni_employment", "quality_of_faculty", "patents")], log='xy')
 
-
 corrplot(cor(cwu.data[4:10]), method='ellipse')
 
 
