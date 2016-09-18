@@ -429,6 +429,25 @@ This table shows that SMU has slightly above average student counts, citations s
 
 \textbf{\textit{How to Improve SMU's Overall Rank}} \\
 
+In order to identify what attributes are most inhibitive to SMU earning a higher ranking, the normalized mean scores from the attributes computed above for SMU is computed for the average of the top-20 schools in the THE and Shanghai datasets.
+
+\begin{center}
+\begin{tabular}{| l | c |}
+\hline
+Attribute & Score \\ 
+\hline
+Num\textunderscore Students & $-0.1407$\\
+Student\textunderscore Staff\textunderscore Ratio  & $-0.7697$\\
+Teaching  & $3.4486$\\
+Citations  & $1.7093$\\
+Alumni  & $2.9714$\\
+\hline
+\end{tabular}
+\end{center}
+\vspace{5mm} 
+
+The two factors that stand out as potential improvements for SMU are the teaching and publications scores. SMU does not vary significantly from the top 20 schools in terms of number of students, and it has an only slightly higher student-to-staff ratio, but it falls more than 4 standard deviations below the top-20 average in terms of teaching, and 1.5 standard deviations below the top-20 average in terms of citations. Therefore, it is in SMU's best interest to focus on improving teaching and research. This means that, for SMU to improve their rank, they need to turn their focus toward catering toward the interests of their existing faculty members and attracting strong new faculty members. This is highly opposed to SMU's current operational model, which has a strong focus on athletics and aesthetics.
+
 \subsection{Attribute Relationships}
 relats
 do a comparison using rank correlation of the THE vs Shanghai vs CWUR datasets.

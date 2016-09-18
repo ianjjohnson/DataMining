@@ -120,3 +120,19 @@ mean(sha.data.scaled[sha.data.scaled$university_name == "Southern Methodist Univ
 
 sha.data.scaled$alumni <- scale(sha.data$alumni)
 mean(sha.data.scaled[sha.data.scaled$university_name == "Southern Methodist University",]$alumni)
+
+
+
+single.year.the <- the.data[the.data$year == max(the.data$year),]
+single.year.the[c("num_students", "student_staff_ratio", "teaching", "citations")] <- lapply(single.year.the[c("num_students", "student_staff_ratio", "teaching", "citations")], scale)
+single.year.the <- single.year.the[1:20,]
+
+single.year.sha <- sha.data[sha.data$year == max(sha.data$year),]
+single.year.sha$alumni <- scale(single.year.sha$alumni)
+single.year.sha <- single.year.sha[1:20,]
+
+mean(single.year.the$num_students)
+mean(single.year.the$student_staff_ratio)
+mean(single.year.the$teaching)
+mean(single.year.the$citations)
+mean(single.year.sha$alumni)
