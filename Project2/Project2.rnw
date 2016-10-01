@@ -22,7 +22,7 @@
 \vspace*{\fill}
 \begin{center}
   
- \tableofcontents
+\tableofcontents
      
 \end{center}
 \vspace*{\fill}
@@ -40,78 +40,112 @@
 \vspace*{\fill}
 \end{titlepage}
 
-
 <<echo=FALSE>>=
-library(zoo)
+library(caret)
+library(rpart)
+library(rpart.plot)
+shanghai <- read.csv("~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/shanghaiData.csv")
+rnk <- as.character(shanghai$world_rank)
+rnk <- sub(pattern = "-.*", "", rnk)
+rnk <- as.numeric(rnk)
+shanghai$world_rank <- rnk
 
-format.rank <- function(x) {
-  
-  if(grepl("=", x)){
-    x <- substring(x, 2)
-  }
-  
-  if(grepl("-", x)){
-    x <- substring(x, 1, 3)
-  }
-  
-  return(x)
-  
-}
+rnk <- as.character(shanghai$national_rank)
+rnk <- sub(pattern = "-.*", "", rnk)
+rnk <- as.numeric(rnk)
 
-the.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/timesData.csv', stringsAsFactors = FALSE)
-the.data$female_male_ratio <- as.numeric(substring(the.data$female_male_ratio, 0, 2)) / as.numeric(substring(the.data$female_male_ratio, 6, 8))
-the.data$female_male_ratio <- ave(the.data$female_male_ratio, the.data$country, FUN = na.aggregate)
-the.data$num_students <- gsub(",", "", the.data$num_students)
-the.data$international_students <- as.numeric(gsub("%", "", the.data$international_students)) / 100
-nums <- c('teaching', 'international', 'research', 'citations', 'income', 'total_score', 'num_students', 'student_staff_ratio', 'international_students')
-the.data[nums] <- lapply(the.data[nums], as.numeric)
-the.data[nums] <- ave(the.data[nums], the.data$country, FUN = na.aggregate)
-the.data$world_rank <- as.numeric(sapply(the.data$world_rank, format.rank))
-the.data$international_students <- as.numeric(substring(the.data$international_students, 0, 2))
-the.data[c(5, 8, 11, 12, 13)] <- ave(the.data[c(5, 8, 11, 12, 13)], the.data$country, FUN = na.aggregate)
-the.data$total_score[is.na(the.data$total_score)] <- mean(the.data$total_score[!is.na(the.data$total_score)])
-the.data <- na.omit(the.data)
-@
+l <- split(shanghai, shanghai$university_name)
+years <- sapply(l, nrow)
 
-<<echo=FALSE>>=
-sha.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/shanghaiData.csv')
-sha.data$total_score <- NULL
-sha.data$world_rank <- as.numeric(sapply(sha.data$world_rank, format.rank))
-sha.data <- na.omit(sha.data)
-@
+r <- lapply(l, FUN = function(x) {
+  d_2005 <- x[x$year==2005,]
+  d_2015 <- x[x$year==2015,]
+  merge(d_2005, d_2015, by = "university_name",
+        all = TRUE, suffix = c("_Y2005", "_Y2015"))
+})
 
-<<echo=FALSE>>=
-cwu.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/cwurData.csv')
-cwu.data$broad_impact <- ave(cwu.data$broad_impact, cwu.data$country, FUN = na.aggregate)
-@
+r <- do.call(rbind, r)
 
-<<echo=FALSE>>=
-att.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/educational_attainment_supplementary_data.csv')
-att.data <- att.data[!grepl("thousands", att.data$series_name),]
+improved <- r$'world_rank_Y2005' - r$'world_rank_Y2015'
+improved <- improved > 0
+r$improved <- as.factor(improved)
 
-att.data <- aggregate(X2005  ~ country_name, att.data, FUN = mean)
-att.data <- att.data[with(att.data, order(-att.data[,2])), ]
-
-
-exp.data <- read.csv('~/Dropbox/Fall 2016/7331 - Data Mining/Projects/Project1/data/education_expenditure_supplementary_data.csv')
-exp.data <- exp.data[76:111,]
-exp.data <- exp.data[exp.data$direct_expenditure_type == "Public",]
-exp.data$mean <- rowMeans(exp.data[4:9], na.rm=TRUE)
-exp.data <- exp.data[c(1, 10)]
+r$'university_name' <- NULL
+r$'year_Y2015' <- NULL
+r$'year_Y2005' <- NULL
+r$'world_rank_Y2015' <- NULL
+r$'national_rank_Y2015' <- NULL
+r$'world_rank_Y2005' <- NULL
+r$'national_rank_Y2005' <- NULL
 @
 
 \section{Data Preparation}
 
-
 \section{Modeling}
 
 \subsection{Decision Tree Classifier}
+<<echo=FALSE>>=
+tree <- rpart(improved ~ ., data=r)
+pred <- predict(tree, r, type="class")
+confusionMatrix(data=pred, reference=r$improved, positive = "TRUE")
+rpart.plot(tree)
+@
+
 \subsection{Association Rule Based Classifier}
+arulesCBA
+<<echo=FALSE>>=
+library(arulesCBA)
+disc <- function(x){
+  return(discretize(x, categories=2, method="frequency"))
+}
+?discretize
+r.disc <- as.data.frame(sapply(r[1:14], disc))
+r.disc$improved <- r$improved
+r.disc <- r.disc[!is.na(r.disc$improved),]
+classifier <- CBA(r.disc, "improved", verbose=TRUE)
+classes <- predict(classifier, r.disc)
+confusionMatrix(classes, r.disc$improved)
+inspect(rules(classifier))
+@
+
+
 \subsection{K-Nearest Neighbors Classifier}
-\subsection{Type 4}
-\subsection{Type 5}
+KNN
+<<echo=FALSE>>=
+library(class)
+r.both <- r[!is.na(r$improved),]
+r.both$total_score_Y2005 <- NULL
+r.both$total_score_Y2015 <- NULL
+r.both <- na.omit(r.both)
+classes <- knn(r.both[1:12], r.both[1:12], as.factor(r.both$improved), k=5)
+confusionMatrix(classes, as.factor(r.both$improved))
+@
+
+\subsection{Linear Support Vector Machine Classifier}
+Linear SVM
+<<echo=FALSE>>=
+library(kernlab)
+svp <- ksvm(improved ~ ., data=r.both, type="C-svc", kernel="vanilladot", C=1, scaled=c())
+classes <- predict(svp, r.both)
+confusionMatrix(classes, r.both$improved)
+@
+
+\subsection{Non-Linear Support Vector Machine Classifier}
+<<echo=FALSE>>=
+svp <- ksvm(improved ~ ., data=r.both, type="C-svc", kernel="rbfdot", C=1, scaled=c())
+classes <- predict(svp, r.both)
+confusionMatrix(classes, r.both$improved)
+@
+
+
+
 
 \section{Model Evaluation}
+Eval
+
+\section{A Deeper Look at Support Vector Machines}
+(Exceptional Work)
+
 
 \begin{thebibliography}{9} 
 
