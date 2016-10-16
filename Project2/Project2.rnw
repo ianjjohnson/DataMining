@@ -34,7 +34,7 @@
   
       {\Large Executive Summary}\\[1.0cm]
 
-     Lorem ipsum... TODO exec.\\[3.0cm]
+     This report explores the classification task of identifying which universities will increase in collegiate rankings based on their performance scores over time. A number of classification algorithms are used, including decision trees, K-nearest-neighbors, and both linear and non-linear support vector machines. Random forests are used to identify the most important variables in the classification task, and it is determined that the most recent performance scores are the strongest prediction of improvement scores. The best classifier produced is a non-linear support vector machine with a Gaussian (RBF) kernel. \\[3.0cm]
      
 \end{center}
 \vspace*{\fill}
@@ -93,7 +93,7 @@ For the purpose of our analysis, we will propose the following problem:
 In order to classify schools as improving or not, a number of additions and transformations must occur. First, most obviously, each university needs to be assigned an actual (measured) value of improvement. Subsequently, a subset of the attributes from the THE, Shanghai, and CWUR datasets must be chosen to be used for the classifier \textsuperscript{[1],[2],[3]}. Finally, missing data must be imputed or removed.
 
 \subsection{Directly Measuring Improvement}
-In order to directly measure the improvement of a university, we define improvement as a decrease in Shanghai world rank from 2005 to 2015. Each university which appears in the Shanghai dataset in either 2005 or 2015 is added to a table of universities which includes columns of the university's Shanghai scores from both 2005 and 2015. The world rank scores of the university and 2005 and 2015 are then compared to see if the ranking of the university improved over the 10-year period. The improvement (or lackthereof) of a university is recorded in an appended column in the matrix, called "improved," which is encoded as TRUE or FALSE and will be used as a class label for our classification algorithms.
+In order to directly measure the improvement of a university, we define improvement as a decrease in Shanghai world rank from 2005 to 2015. Each university which appears in the Shanghai dataset in either 2005 or 2015 is added to a table of universities which includes columns of the university's Shanghai scores from both 2005 and 2015. The world rank scores of the university and 2005 and 2015 are then compared to see if the ranking of the university improved over the 10-year period. The improvement (or lack-thereof) of a university is recorded in an appended column in the matrix, called "improved," which is encoded as TRUE or FALSE and will be used as a class label for our classification algorithms.
 
 \subsection{Selecting a Subset of Attributes for Classification}
 Because we choose to isolate the years 2005 and 2015, the Shanghai dataset is an obvious choice of attributes to perform classification on, as it includes data from both of those years. The THE dataset includes some additional data which includes direct measurements of various attributes of universities such as number of students and student-to-staff ratio. These data columns are deliberately excluded, so that classification can be performed strictly based on actual scores. By excluding directly measured measurements, we can classify based on perceived quality of a university without arbitrarily defining a directly measured attribute as being good or bad.
@@ -102,7 +102,7 @@ Because we choose to isolate the years 2005 and 2015, the Shanghai dataset is an
 By merging the Shanghai datasets from 2005 and 2015, we introduce a number of universities which occur in one year, but not in the other. Imputing data for such universities would likely produce reasonable results for the non-class attributes of each university. However, all such universities will be excluded because imputing the class attribute (improved) of each university could significantly skew our model, as well as the perceived accuracy of our model. 
 
 \subsection{Dataset Used for Classification}
-The following columns are included in the final classification datset. All columns are in the table twice (once for 2005 and once for 2015), with the exception of \textit{university\textunderscore name} and \textit{improved}.
+The following columns are included in the final classification dataset. All columns are in the table twice (once for 2005 and once for 2015), with the exception of \textit{university\textunderscore name} and \textit{improved}.
 
 \begin{center}
 \begin{tabular}{| l | c | p{100mm} |}
@@ -114,9 +114,9 @@ The following columns are included in the final classification datset. All colum
 \hline
 \textbf{total\textunderscore score} & \textit{ratio} & The Shanghai Ranking total score, used for ranking \\
 \hline
-\textbf{alumni} & \textit{ratio} & Alumni score based on the number of alumni winning nobel prizes and fields medals \\ 
+\textbf{alumni} & \textit{ratio} & Alumni score based on the number of alumni winning noble prizes and fields medals \\ 
 \hline
-\textbf{award} & \textit{ratio} & Metric for the number of staff winning nobel prizes and fields medals \\
+\textbf{award} & \textit{ratio} & Metric for the number of staff winning noble prizes and fields medals \\
 \hline
 \textbf{hici} & \textit{ratio} & Metric for the number of highly-cited researchers at the university \\
 \hline
@@ -150,7 +150,7 @@ rpart.plot(tree, extra=1)
 \textit{Figure 2.1 - A decision tree to classify university rank improvement}
 \end{center}
 
-Each of the leaf nodes in Figure 2.1 shows the split of improvement scores at the given leaf of the tree. The strongest possible classifier will have a complete split at each leaf (all of the values will either be true or false at any given leaf node). However, if there is a complete split at each leaf, it's very possible that the tree was overfit to the training dataset. Hyperparameters were supplied to this tree to prevent such an occurence.
+Each of the leaf nodes in Figure 2.1 shows the split of improvement scores at the given leaf of the tree. The strongest possible classifier will have a complete split at each leaf (all of the values will either be true or false at any given leaf node). However, if there is a complete split at each leaf, it's very possible that the tree was over-fit to the training dataset. Hyper-parameters were supplied to this tree to prevent such an occurrence.
 
 <<echo=FALSE>>=
 varImp(tree, compete = FALSE)
@@ -173,7 +173,7 @@ confusionMatrix(data=pred, reference=r.test$improved, positive = "TRUE")
 Figure 2.3 shows that the decision tree produced 31 type I errors and 18 type II errors. It had an accuracy of .637 (note that accuracy \textit{is} a meaningful metric in this scenario, because we have a near-even split of classes in the dataset), which leaves lots of room for improvement in forthcoming models. The kappa value of the model is 0.2648, which is far from optimal. However, this decision tree is a good starting point for classification.
 
 \subsection{Association Rule Based Classifier}
-Our second approach to classification will be a rule-based classifier. We will use an association rule based classification algorithm. Association rule-based classification is typically strongest for high-dimensional data, which this dataset is not; however, we will evaluate it nonetheless. Association rule-based classification will be performed using CRAN package "arulesCBA" \textsuperscript{[5]}.
+Our second approach to classification will be a rule-based classifier. We will use an association rule based classification algorithm. Association rule-based classification is typically strongest for high-dimensional data, which this dataset is not; however, we will evaluate it nonetheless, because it stands to reason that certain pairings of 2005 and 2015 scores result in improvement or lack-thereof. Association rule-based classifiers excel at identifying trends such as these. In order to build such a model, all data must be discretized. For the model shown in Figure 2.4, every data column was discretized using frequency-based discretization from CRAN package "arules" \textsuperscript{[6]}. Association rule-based classification will be performed using CRAN package "arulesCBA" \textsuperscript{[5]}.
 
 <<echo=FALSE>>=
 library(arulesCBA)
@@ -193,7 +193,9 @@ inspect(rules(classifier))
 \textit{Figure 2.4 - The rule base for the association rule classifier}
 \end{center}
 
-Figure 2.4 shows the rule base for the association rule classifier. The first rule identifies \textit{pub} scores from 2005 and \textit{award}, \textit{ns}, and \textit{pub} scores from 2015 as important factors in the classification. Unfortunately, the algorithm only produced a single rule for classification, and the rule has very little support (it represents only a small sample of the dataset). Therefore, the identified attributes are likely not particularly meaningful, and it is unlikely that the classifier will produce meaningful results. Nonetheless, the model is evaluated in Figure 2.5.
+Figure 2.4 shows the rule base for the association rule classifier. The first rule identifies \textit{pub} scores from 2005 and \textit{award}, \textit{ns}, and \textit{pub} scores from 2015 as important factors in the classification. This continues the trend set forth by the decision tree model where features from 2015 are generally more important for classification than features from 2005. 
+
+Unfortunately, the algorithm only produced a single rule for classification, and the rule has very little support (it represents only a small sample of the dataset). Therefore, the identified attributes are likely not particularly meaningful, and it is unlikely that the classifier will produce meaningful results. Nonetheless, the model is evaluated in Figure 2.5.
 
 <<echo=FALSE>>=
 confusionMatrix(classes, r.disc[250:379,]$improved)
@@ -205,9 +207,9 @@ confusionMatrix(classes, r.disc[250:379,]$improved)
 Figure 2.5 shows that, as expected, the association rule classification model is completely worthless. While it has an accuracy of .6231, it has a kappa value of 0 because it assigns the same prediction to every single new data entry. This is not unexpected for a low-dimensional dataset such as the one we use for analysis.
 
 \subsection{K-Nearest Neighbors Classifier}
-The third classification model will be built using the K-nearest-neighbors algorithm, which performs classification by calculating the euclidian distance from each new data entry to each training entry in an N-dimensional space, where N is the number of columns in the training data. It then takes the K nearest neighbors of the new data entry and assigns it a class based on the mode of the classes of the training data. Note that all attributes are normalized before using KNN, to prevent one attribute from artificially carrying more weight than another due to differing dynamic ranges. Figure 2.6 shows an evaluation of the KNN model for K=3.
+The third classification model will be built using the K-nearest-neighbors algorithm, which performs classification by calculating the Euclidean distance from each new data entry to each training entry in an N-dimensional space, where N is the number of columns in the training data. It then takes the K nearest neighbors of the new data entry and assigns it a class based on the mode of the classes of the training data. Note that all attributes are normalized before using KNN, to prevent one attribute from artificially carrying more weight than another due to differing dynamic ranges. Figure 2.6 shows an evaluation of the KNN model for K=3.
 
-The KNN classifer is built using CRAN package "class" \textsuperscript{[6]}.
+The KNN classifier is built using CRAN package "class" \textsuperscript{[7]}.
 <<echo=FALSE>>=
 library(class)
 r.both <- r[!is.na(r$improved),]
@@ -242,10 +244,19 @@ K & Accuracy & Kappa \\
 \textit{Figure 2.7 - Accuracy and kappa for various values of K}
 \end{center}
 
+Although KNN does not provide an explicit way of measuring the importance of any particular variable, we can still evaluate the working theory that the 2015 attributes are more important than the 2005 attributes by performing KNN on the dataset with only the 2015 attributes. Figure 2.8 shows the results of performing KNN with a K value of 5 with only the 2015 attributes.
+
+<<echo=FALSE>>=
+classes <- knn(r.both[1:250,][7:12], r.both[251:377,][7:12], as.factor(r.both[1:250,]$improved), k=5)
+confusionMatrix(classes, as.factor(r.both[251:377,]$improved))
+@
+
+Figure 2.8 shows that excluding the 2005 data from the improvement classification for KNN only reduces accuracy to 0.6535 (from 0.685) and kappa to 0.2363 (from 0.3474). Clearly, the 2005 data carries some weight in the KNN classifier. However, the KNN classification still outperforms the decision tree classifier even without any of the 2005 data. This supports the claim that the 2015 attributes are more relevant to classification than the 2005 attributes for this classification task.
+
 \subsection{Linear Support Vector Machine Classifier}
 Our next classification model will be built using a linear SVM (support vector machine). A linear SVM attempts to, in N dimensions, draw a linear N-1 dimensional boundary which separates the data into two classes. SVMs have an important hyper-parameter called C, or cost, which defines how strongly the SVM will fit to the training data. For low values of C, the SVM will try to build a highly generalized model, while high values of C will build a model strongly tuned to the intricacies (or noise) of the training data.
 
-The linear SVM classifer is built using CRAN package "kernlab" \textsuperscript{[7]}.
+The linear SVM classifier is built using CRAN package "kernlab" \textsuperscript{[8]}.
 <<echo=FALSE>>=
 library(kernlab)
 svp <- ksvm(improved ~ ., data=r.both[1:250,], type="C-svc", kernel="vanilladot", C=.01, scaled=c())
@@ -253,12 +264,12 @@ classes <- predict(svp, r.both[251:377,])
 confusionMatrix(classes, r.both[251:377,]$improved)
 @
 \begin{center}
-\textit{Figure 2.8 - Evaluation of the linear SVM model}
+\textit{Figure 2.9 - Evaluation of the linear SVM model}
 \end{center}
 
-Figure 2.8 shows that the linear SVM produced 6 type I errors and 21 type II errors for an accurracy of 0.7874 and a kappa value of 0.5119. This is by far the best-performing classifier we've built so far. Moreover, it ended the trend of producing a high number of type I errors, which was an issue for the previous classifiers. This particular SVM model was produced with a C value of 0.01; however, C is an explicit hyper-parameter that can be tuned. 
+Figure 2.9 shows that the linear SVM produced 6 type I errors and 21 type II errors for an accuracy of 0.7874 and a kappa value of 0.5119. This is by far the best-performing classifier we've built so far. Moreover, it ended the trend of producing a high number of type I errors, which was an issue for the previous classifiers. This particular SVM model was produced with a C value of 0.01; however, C is an explicit hyper-parameter that can be tuned. 
 
-Figure 2.9 shows the accuracy and kappa values of the models generated using a set of costs (C values). As expected, higher cost values generally lead to lower accuracies, because the resulting SVM is overfitted to the training data.
+Figure 2.10 shows the accuracy and kappa values of the models generated using a set of costs (C values). As expected, higher cost values generally lead to lower accuracies, because the resulting SVM is over-fitted to the training data.
 
 \begin{center}
 \begin{tabular}{|c|c|c|}
@@ -275,11 +286,13 @@ Cost & Accuracy & Kappa \\
 \end{tabular}
 \end{center}
 \begin{center}
-\textit{Figure 2.9 - Accuracy and kappa for various values of C}
+\textit{Figure 2.10 - Accuracy and kappa for various values of C}
 \end{center}
 
+Much like KNN, SVMs allow very little insight into the importance of the variables in the dataset for the classification task. However, an additional variable importance metric will be introduced later, following a look at non-linear SVMs for classification.
+
 \subsection{Non-Linear Support Vector Machine Classifier}
-SVMs can be improved upon by adding non-linearity to the dividing 'line.' Various kernel methods allow for the projection of the dataset into higher-dimensional space, where non-linear differences in the original N-dimensional space may become linearly separable. A number of different SVM kernels exist, the most popular being the RBF kernel. Different kernel types will be explored more in later secions. After the data has been projected into additional dimensions, a non-linear N-dimensional decision function can be built which accepts new N-dimensional data and assigns it a class. Overfitting is a large concern with non-linear SVMs, especially with the RBF kernel. The RBF kernel can project data into an infinite-dimensional space, allowing for perfect classification of the training set. However, this will generate a highly noisy decision function which is tightly fitted to minor intricacies of the training set.
+SVMs can be improved upon by adding non-linearity to the dividing 'line.' Various kernel methods allow for the projection of the dataset into higher-dimensional space, where non-linear differences in the original N-dimensional space may become linearly separable. A number of different SVM kernels exist, the most popular being the RBF kernel. Different kernel types will be explored more in later sections. After the data has been projected into additional dimensions, a non-linear N-dimensional decision function can be built which accepts new N-dimensional data and assigns it a class. Over-fitting is a large concern with non-linear SVMs, especially with the RBF kernel. The RBF kernel can project data into an infinite-dimensional space, allowing for perfect classification of the training set. However, this will generate a highly noisy decision function which is tightly fitted to minor intricacies of the training set.
 
 <<echo=FALSE>>=
 svp <- ksvm(improved ~ ., data=r.both[1:250,], type="C-svc", kernel="rbfdot", C=5, scaled=c())
@@ -287,12 +300,12 @@ classes <- predict(svp, r.both[251:377,])
 confusionMatrix(classes, r.both[251:377,]$improved)
 @
 \begin{center}
-\textit{Figure 2.8 - Evaluation of the non-linear SVM model}
+\textit{Figure 2.11 - Evaluation of the non-linear SVM model}
 \end{center}
 
-Figure 2.8 shows that the non-linear SVM model yields 7 type I errors and 12 type II errors, for an accuracy of 0.8504 and a kappa value of 0.6719. Once again, this noticeably outperforms the previous models. This is expected, as SVMs with non-linear kernels are generally one of the most effective classification methods for many datasets and dataset sizes \textsuperscript{[8]}. Once again, the type II errors outnumbered the type I errors for the non-linear SVM, so it seems that the trend in the first models toward type I errors was simply coincidental. The SVM evaluated in figure 2.8 was generated with a cost value of 5.
+Figure 2.11 shows that the non-linear SVM model yields 7 type I errors and 12 type II errors, for an accuracy of 0.8504 and a kappa value of 0.6719. Once again, this noticeably outperforms the previous models. This is expected, as SVMs with non-linear kernels are generally one of the most effective classification methods for many datasets and dataset sizes \textsuperscript{[9]}. Once again, the type II errors outnumbered the type I errors for the non-linear SVM, so it seems that the trend in the first models toward type I errors was simply coincidental. The SVM evaluated in figure 2.8 was generated with a cost value of 5.
 
-Figure 2.9 shows the accuracy and kappa values for various values of C (cost) for the RBF kernel SVM. For this kernel, it seems that there's a peak in accuracy and kappa around C = 5, and the accuracy and kappa decrease as C becomes greater than or less than 5.
+Figure 2.12 shows the accuracy and kappa values for various values of C (cost) for the RBF kernel SVM. For this kernel, it seems that there's a peak in accuracy and kappa around C = 5, and the accuracy and kappa decrease as C becomes greater than or less than 5.
 
 \begin{center}
 \begin{tabular}{|c|c|c|}
@@ -309,16 +322,99 @@ Cost & Accuracy & Kappa \\
 \end{tabular}
 \end{center}
 \begin{center}
-\textit{Figure 2.11 - Accuracy and kappa for various values of C}
+\textit{Figure 2.12 - Accuracy and kappa for various values of C}
 \end{center}
 
+Because both linear and non-linear SVMs provide no insight into the importance of variables in the classification task, a supplementary look into variable importance will be performed using random forests.
+
+\subsection{Random Forest Variable Importance Evaluation}
+A random forest importance measure of all variables is computed on the training portion of the dataset, and the results are shown in Figure 2.13. CRAN package "randomForest" is used to create the random forest \textsuperscript{[10]}.
+
+<<echo=FALSE>>=
+library(randomForest)
+rf <- randomForest(improved ~ ., data=r.both[1:250,], importance=TRUE,proximity=TRUE)
+importance(rf)
+@
+\begin{center}
+\textit{Figure 2.13 - Variable importance evaluation using a random forest}
+\end{center}
+
+Figure 2.13 shows 4 different scores for the importance of each variable (the weight of a FALSE value, the weight of a TRUE value, the effect on accuracy, and the effect on the Gini index). Figure 2.14 reduces Figure 2.13 into two items by taking the row means of each row, creating an aggregate score for each variable. Figure 2.15 takes the sum of the 2005 and 2015 variables from Figure 2.14 and compares them directly, showing that the 2015 attributes do, in fact, carry slightly more weight in this classification task than the 2005 attributes.
+
+<<echo=FALSE>>=
+rowMeans(importance(rf))
+@
+\begin{center}
+\textit{Figure 2.14 - Condensed variable importance evaluation using a random forest}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Year & Weight \\
+\hline
+2005 & 45.38 \\
+2015 & 59.65 \\
+\hline
+\end{tabular}
+\end{center}
+\begin{center}
+\textit{Figure 2.15 - Variable importance weights by year}
+\end{center}
 
 \section{Model Evaluation}
-Eval
+The five models we produced provided insight into the classification task (identifying which universities will improve and which will not) and produced a maximum accuracy of 85\% (using a non-linear support vector machine with the RBF kernel). We identify that 2015 scores are more important than 2005 scores in predicting whether or not a university improved between 2005 and 2015. This may be due to the way that Shanghai rankings were performed in those years, or this may be inherent to the generalized classification task of predicting improvement.
+
+Stakeholders in the collegiate ranking problem may gain important insights from the classification process. \textbf{Students} looking at universities to attend can recognize that the most recent scores for universities outweigh the old ones considerably. Meanwhile, \textbf{governments} and \textbf{university leadership} know that their decision to invest in improving their universities should not be dependent on passed performance, because it's not a good predictor of whether or not the university will improve in the future.
 
 \section{A Deeper Look at Support Vector Machines}
-(Exceptional Work)
+In section 2, we took advantage of the kernel method for SVMs to project our data into additional dimensions to produce a non-linear decision function for our SVM classifier. However, the only kernel we used was the RBF kernel, which is one of many popular non-linear SVM kernels. The following sections will explore some additional non-linear kernels for SVMs.
 
+\subsection{The Polynomial Kernel}
+
+The polynomial kernel uses polynomial functions to project the dataset into additional dimensions. Figure 3.1 shows the performance of the polynomial kernel on the improvement classification problem. Note that the same testing and training sets will be used for the additional SVM kernel classifiers as were used for the classifiers built in section 2.
+
+<<echo=FALSE>>=
+svp <- ksvm(improved ~ ., data=r.both[1:250,], type="C-svc", kernel="polydot", C=5, scaled=c())
+classes <- predict(svp, r.both[251:377,])
+confusionMatrix(classes, r.both[251:377,]$improved)
+@
+\begin{center}
+\textit{Figure 3.1 - Evaluation of the non-linear SVM model with a polynomial kernel}
+\end{center}
+
+Figure 3.1 shows that the polynomial kernel yields 10 type I errors and 22 type II errors for an accuracy of 0.748 and a kappa value of 0.4295. While this outperforms the linear SVM, it is considerably less accurate than the RBF kernel.
+
+\subsection{The Hyperbolic Tangent Kernel}
+
+The hyperbolic tangent kernel transforms the data into a higher dimensional space using a hyperbolic tangent function. Figure 3.2 shows the performance of a non-linear SVM with the hyperbolic tangent kernel for this classification problem. 
+<<echo=FALSE>>=
+svp <- ksvm(improved ~ ., data=r.both[1:250,], type="C-svc", kernel="tanhdot", C=1, scaled=c())
+classes <- predict(svp, r.both[251:377,])
+confusionMatrix(classes, r.both[251:377,]$improved)
+@
+\begin{center}
+\textit{Figure 3.2 - Evaluation of the non-linear SVM model with a hyperbolic tangent kernel}
+\end{center}
+
+Figure 3.2 shows that the hyperbolic tangent kernel performs poorly for this classification task. It produces exclusively FALSE predictions, yielding 47 type II errors. This is not a meaningful classifier.
+
+\subsection{The Anova Kernel}
+
+The Anova kernel is a variant of the RBF kernel which passes data through a polynomial transform before applying an RBF (Gaussian) kernel. To some degree, it can be considered a combination of the polynomial and RBF kernels. Figure 3.3 shows the performance of the Laplacian kernel for the university improvement classification problem.
+<<echo=FALSE>>=
+svp <- ksvm(improved ~ ., data=r.both[1:250,], type="C-svc", kernel="anovadot", C=5, scaled=c())
+classes <- predict(svp, r.both[251:377,])
+confusionMatrix(classes, r.both[251:377,]$improved)
+@
+\begin{center}
+\textit{Figure 3.3 - Evaluation of the non-linear SVM model with an ANOVA kernel}
+\end{center}
+
+Figure 3.3 shows that the ANOVA kernel SVM classifier yields 30 type I and 20 type II errors, for an accuracy of 0.6063 and a kappa of 0.1911. This only narrowly outperforms random class assignment, and it is inferior to each of the non-SVM classifiers generated.
+
+\subsection{Conclusion on SVM Kernels}
+As expected, the RBF kernel was the most effective in performing this classification task. The other non-linear kernels used (ANOVA, Hyperbolic Tangent, and Polynomial) were not able to match the high accuracy and kappa values of the RBF kernel's classifier on the testing dataset. The linear kernel, interestingly, outperformed all of the non-linear kernels except the RBF kernel, suggesting that the underlying N-dimensional space is nearly linearly-separable with respect to the class variable (improved).
 
 \begin{thebibliography}{9} 
 
@@ -328,38 +424,14 @@ Eval
 \bibitem{caret}  Max Kuhn. Contributions from Jed Wing, Steve Weston, Andre Williams, Chris Keefer, Allan Engelhardt, Tony Cooper, Zachary Mayer, Brenton Kenkel,
   the R Core Team, Michael Benesty, Reynald Lescarbeau, Andrew Ziem, Luca Scrucca, Yuan Tang and Can Candan. (2016). caret: Classification and
   Regression Training. R package version 6.0-68. https://CRAN.R-project.org/package=caret
+\bibitem{arules} Michael Hahsler, Christian Buchta, Bettina Gruen and Kurt Hornik (2016). arules: Mining Association Rules and Frequent Itemsets. R package version
+  1.5-0. https://CRAN.R-project.org/package=arules
 \bibitem{arulesCBA} Ian Johnson (2016). arulesCBA: Classification Based on Association Rules. R package version 1.0.2.
 \bibitem{class} Venables, W. N. Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth Edition. Springer, New York. ISBN 0-387-95457-0
 \bibitem{kernlab} Alexandros Karatzoglou, Alex Smola, Kurt Hornik, Achim Zeileis (2004). kernlab - An S4 Package for Kernel Methods in R. Journal of Statistical
   Software 11(9), 1-20. URL http://www.jstatsoft.org/v11/i09/
 \bibitem{svmAccuracy} Lu, D.S.; Weng, Q.H. A survey of image classification methods and techniques for improving classification performance. Int. J. Remote Sens. 2007, 28, 823–870.
-
-
-\bibitem{attainment} Education Attainment Query. \textit{datatopics.worldbank.org}, Barro-Lee Dataset, UNESCO Institute for Statistics, 2013.
-\bibitem{expenditure} National Center for Education Statistics. \textit{nces.edu.gov}, Digest of Education Expenditure Statistics, 2011.
-\bibitem{zoo} Achim Zeileis and Gabor Grothendieck (2005). zoo: S3 Infrastructure for Regular and Irregular Time Series. Journal of Statistical Software,
-  14(6), 1-27. URL http://www.jstatsoft.org/v14/i06/
-\bibitem{adjunct} "Background Facts on Contingent Faculty." \textit{AAUP}. American Association of University Professors, n.d. Web. 12 Sept. 2016.
-\bibitem{thepub} THE Citation Data, "Citation Averages, 2000-2010, by Fields and Years." THE. Times Higher Education, 22 May 2015. Web. 13 Sept. 2016.
-\bibitem{vioplot} Daniel Adler (2005). \textit{vioplot}: Violin plot. R package version 0.2. http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler
-\bibitem{intnlmoney} Stephens, Paul. "International Students: Separate but Profitable." Washington Monthly. Washington Monthly, 05 July 2016. Web. 18 Sept. 2016.
-\bibitem{corrplot} Taiyun Wei and Viliam Simko (2016). corrplot: Visualization of a Correlation Matrix. R package version 0.77. https://CRAN.R-project.org/package=corrplot
-\bibitem{cross} "U.S. Department of Education Database of Accredited Postsecondary Institutions and Programs." U.S. Department of Education Database of Accredited Postsecondary Institutions and Programs. DOE, n.d. Web. 18 Sept. 2016.
-\bibitem{gg} H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2009.
-\bibitem{maps} Original S code by Richard A. Becker, Allan R. Wilks. R version by Ray Brownrigg. Enhancements by Thomas P Minka and Alex Deckmyn. (2015). maps:
-  Draw Geographical Maps. R package version 3.0.1. https://CRAN.R-project.org/package=maps
-%14 so far
+\bibitem{randomforest} A. Liaw and M. Wiener (2002). Classification and Regression by randomForest. R News 2(3), 18--22.
 \end{thebibliography} 
 
 \end{document}
-
-
-
-%Notes: 
-%@TODO: Switch all figures to include fig number and refs
-%Mapping by state in USA: https://gist.github.com/cdesante/4252133 for mapping USA
-%State-to-school map: http://ope.ed.gov/accreditation/GetDownLoadFile.aspx
-%Data Source: https://www.kaggle.com/mylesoneill/world-university-rankings
-%Use this reference: http://colleges.usnews.rankingsandreviews.com/best-colleges/smu-3613
-
-              
