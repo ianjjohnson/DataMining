@@ -111,6 +111,18 @@ The dataset which will be used moving forward has the following columns:
 Note that a few columns have been removed, including experiment number and replication number. The experiment number has no real meaning, and the replication number has been aggregated away.
 
 \subsection{Data Discretization}
+Based on the Syngenta problem statement, that at each test year, only the top 15\% of seeds of move on to the subsequent year, it is meaningful to discretize yield results into 7 sections by equal frequency, such that approximately 15\% of the seeds fall into each section after discretization.
+
+\begin{center}
+<<echo=FALSE, fig=TRUE>>=
+df <- read.csv('../../Competition/data/clusteredLocations.csv')
+hist(df$yield, main = "Histogram of Yield Prior to Discretization",freq = TRUE)
+lines(density(df$yield))
+@
+\textit{Figure 1.2 - Histogram of yield prior to discretization}
+\end{center}
+
+Figure 1.2 shows that the yield of a soybean experiment follows a normal distribution
 
 
 \subsection{Transaction Set Creation}
