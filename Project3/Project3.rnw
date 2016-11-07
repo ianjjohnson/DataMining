@@ -111,21 +111,89 @@ The dataset which will be used moving forward has the following columns:
 Note that a few columns have been removed, including experiment number and replication number. The experiment number has no real meaning, and the replication number has been aggregated away.
 
 \subsection{Data Discretization}
+
+\subsubsection{Yield Discretization}
 Based on the Syngenta problem statement, that at each test year, only the top 15\% of seeds of move on to the subsequent year, it is meaningful to discretize yield results into 7 sections by equal frequency, such that approximately 15\% of the seeds fall into each section after discretization.
 
 \begin{center}
 <<echo=FALSE, fig=TRUE>>=
 df <- read.csv('../../Competition/data/clusteredLocations.csv')
-hist(df$yield, main = "Histogram of Yield Prior to Discretization",freq = TRUE)
+df$ratio <- df$yield / df$rm
+hist(df$yield, main = "Histogram of Yield Prior to Discretization",freq = FALSE)
 lines(density(df$yield))
 @
 \textit{Figure 1.2 - Histogram of yield prior to discretization}
 \end{center}
 
-Figure 1.2 shows that the yield of a soybean experiment follows a normal distribution
+Figure 1.2 shows that the yield of a soybean experiment follows a normal distribution, so equal-frequency discretization will yield much smaller ranges in the middle section of the data than on the outside sections. This is okay, however, as we're most interested in identifying which seeds are the highest and lowest performing without excluding too many seeds from the top tiers by using equal-width discretization.
 
+\begin{center}
+<<echo=FALSE>>=
+library(arulesCBA)
+df$yield <- discretize(df$yield, method="frequency", categories = 6)
+table(df$yield)
+@
+\textit{Figure 1.3 - Number of rows in each discretized yield category}
+\end{center}
+
+Figure 1.3 shows that, after discretization, the yield attribute in the dataframe is split into 6 evenly-filled categories.
+
+Discretization is performed using CRAN package "arules" \textsuperscript{[4]}
+
+\subsubsection{Relative Maturity Discretization}
+Relative maturity, as defined by the syngenta problem statement, is a representation of the number of months that it takes for a soybean seed to mature, where lower values are preferred.
+
+In order to inform the discretization strategy decision for relative maturity (RM), a histogram of the attribute is plotted in Figure 1.4.
+
+\begin{center}
+<<echo=FALSE, fig=TRUE>>=
+hist(df$rm, main = "Histogram of RM Prior to Discretization",freq = FALSE)
+lines(density(df$rm))
+@
+\textit{Figure 1.4 - Histogram of relative maturity prior to discretization}
+\end{center}
+
+Figure 1.4 shows that RM, much like yield, is normally distributed. While RM is slightly skewed, it stands to reason that the same discretization strategy can apply.
+
+\begin{center}
+<<echo=FALSE>>=
+library(arulesCBA)
+df$yield <- discretize(df$rm, method="frequency", categories = 6)
+table(df$rm)
+@
+\textit{Figure 1.5 - Number of rows in each discretized RM category}
+\end{center}
+
+Figure 1.5 shows that, after discretization, the RM variable is split into 6 evenly-filled categories, much like yield.
+
+\subsubsection{An Additional Feature}
+
+An optimal seed will produce the maximal amount of soybeans in the minimum amount of time. Therefore, the yield-to-rm ratio may be a meaningful attribute when it comes to soybean seed evaluation.
+
+The yield-to-rm ratio, which will be called 'yield ratio,' is computed using a row-wise quotient of yield over rm, and the distribution of the new attribute is shown in figure 1.6. Note that the row-wise quotient is computed before the yield and rm variables are discretized, so the result is a true division of the original attributes and is independent of previous discretization.
+
+\begin{center}
+<<echo=FALSE, fig=TRUE>>=
+hist(df$ratio[df$ratio < 100], main = "Histogram of Ratio Prior to Discretization",freq = FALSE)
+lines(density(df$ratio[df$ratio < 100]))
+@
+\textit{Figure 1.6 - Histogram of yield ratio prior to discretization}
+\end{center}
+
+Yield ratio, like yield and RM, is normally distributed, so it can be discretized using the same strategy used for yield and RM (6-way frequency-based discretization).
+
+\begin{center}
+<<echo=FALSE>>=
+df$ratio <- discretize(df$ratio, method="frequency", categories = 6)
+table(df$ratio)
+@
+\textit{Figure 1.7 - Number of rows in each discretized yield ratio category}
+\end{center}
+
+Figure 1.7 shows that, after discretization, the yield ratio variable is split up into 6 evenly-filled categories.
 
 \subsection{Transaction Set Creation}
+The dataset will be partitioned into two transaction sets based on the "check" variable. The resulting two itemsets, therefore, will represent test seeds and check seeds, respectively. One set will include exclusively seeds that are already at market, and the other set will contain seeds that are currently being tested.
 
 \section{Modeling}
 
@@ -138,7 +206,8 @@ Figure 1.2 shows that the yield of a soybean experiment follows a normal distrib
 \bibitem{syngenta} "2017 Problem." - INFORMS O.R. and Analytics Student Team Competition. N.p., n.d. Web. 03 Nov. 2016.
 \bibitem{flexclust} Friedrich Leisch. A Toolbox for K-Centroids Cluster Analysis. Computational Statistics and Data Analysis, 51 (2), 526-544, 2006.
 \bibitem{caret}  Max Kuhn. Contributions from Jed Wing, Steve Weston, Andre Williams, Chris Keefer, Allan Engelhardt, Tony Cooper, Zachary Mayer, Brenton Kenkel, the R Core Team, Michael Benesty, Reynald Lescarbeau, Andrew Ziem, Luca Scrucca, Yuan Tang and Can Candan. (2016). caret: Classification and Regression Training. R package version 6.0-68. https://CRAN.R-project.org/package=caret
-%3 so far
+\bibitem{arules}  Michael Hahsler, Christian Buchta, Bettina Gruen and Kurt Hornik (2016). arules: Mining Association Rules and Frequent Itemsets. R package version 1.5-0. https://CRAN.R-project.org/package=arules
+%4 so far
 
 \end{thebibliography} 
 
