@@ -158,7 +158,7 @@ Figure 1.4 shows that RM, much like yield, is normally distributed. While RM is 
 \begin{center}
 <<echo=FALSE>>=
 library(arulesCBA)
-df$yield <- discretize(df$rm, method="frequency", categories = 6)
+df$rm <- discretize(df$rm, method="frequency", categories = 6)
 table(df$rm)
 @
 \textit{Figure 1.5 - Number of rows in each discretized RM category}
@@ -195,7 +195,267 @@ Figure 1.7 shows that, after discretization, the yield ratio variable is split u
 \subsection{Transaction Set Creation}
 The dataset will be partitioned into two transaction sets based on the "check" variable. The resulting two itemsets, therefore, will represent test seeds and check seeds, respectively. One set will include exclusively seeds that are already at market, and the other set will contain seeds that are currently being tested.
 
+\begin{center}
+<<echo=FALSE>>=
+
+df$X.1 <- NULL
+df$X   <- NULL
+df$year <- as.factor(df$year)
+df$locationGroup <- as.factor(df$locationGroup)
+df$repno <- NULL
+
+
+check <- as(df[df$check == "True",][c(1:5,7:13)], 'transactions')
+test  <- as(df[df$check != "True",][c(1:5,7:13)], 'transactions') 
+@
+\begin{tabular}{|l|c|}
+\hline
+Check & 42842 \\
+\hline
+Test & 215411 \\
+\hline
+\end{tabular}
+
+\textit{Figure 1.8 - Number of rows in each of the two transaction sets}
+\end{center}
+
+Figure 1.8 shows the number of check and non-check rows in the original dataset, and therefore the number of rows in the two transaction sets being built. It is important to note that the non-check transaction set is much larger than the check transactions set.
+
+\subsubsection{Transaction Set Summary}
+
+\begin{center}
+<<echo=FALSE>>=
+summary(check)
+@
+\textit{Figure 1.9 - Summary information for the check transaction set}
+\end{center}
+
+Figure 1.9 shows a summary of the check transaction set, whose most frequent items are \textit{grad=.} and \textit{bagsold=.} (which represents all non-graduating seeds). This means that there will likely be a number of non-meaningful association rules built, as these items essentially represent missing data. However, this will be handled in rule post-processing by only selecting rules which are of interest.
+
+The summary for the test transaction set is ommited in the interest of brevity.
+
+\subsubsection{Item Frequency Plot}
+
+Figure 1.10 shows an item frequency plot for individual items in the check transaction set. 
+
+\begin{center}
+<<echo=FALSE, fig=TRUE>>=
+library(arulesViz)
+itemFrequencyPlot(check, topN=20)
+@
+\textit{Figure 1.10 - Item frequency plot for check transaction set}
+\end{center}
+
+Figure 1.10 shows that, beyond the 3 high frequency missing data items, the most frequent items are years and location groups. This is reasonable, since location group and year were discretized into 3 and 5 categories, respectively, while the yield, rm, and ratio statistics were discretized into 6 categories, and all of those categories are nearly equally filled.
+
 \section{Modeling}
+
+\subsection{The Check Variety Itemset}
+First, the check variety itemset will be evaluated. A number of frequent itemsets and association rules will be generated with the check variety itemset, and they will be analyzed to unearth trends or meaningful information from the data.
+
+\subsubsection{Check Variety Frequent Itemsets}
+
+To begin our analysis, frequent itemsets will be mined from the check dataset with the default support constraint of 0.05.
+Figure 2.1 shows the first 10 most frequent itemsets (the first 10 items in the itemset after the set is sorted by support).
+
+\begin{center}
+<<echo=FALSE>>=
+sets.check <- apriori(check, parameter=list(target="frequent", support=0.05))
+sets.check <- sort(sets.check, by="support")
+
+inspect(head(sets.check, n=10))
+@
+\textit{Figure 2.1 - Top 10 most frequent itemsets}
+\end{center}
+
+Figure 2.1 shows that the majority of the high-frequency itemsets include the "." characteristic, which represents missing data in the original dataset. Therefore, we will eliminate the rules that include that characteristic and show the new top-5.
+
+\begin{center}
+<<echo=FALSE>>=
+inspect(sets.check[c(8,9,20,32,33)])
+@
+\textit{Figure 2.2 - Top 5 most frequent itemsets, excluding "." items}
+\end{center}
+
+Figure 2.2 shows that the most frequent itemsets are, in fact, single item itemsets which represent years and locations. This is expected, given the results shown in Figure 1.9.
+
+\subsubsection{Closed Itemsets}
+The list of mined itemsets from the previous section will be subsetted to isolate only closed itemsets. Closed itemsets are itemsets for which no immediate supersets have the same support as the itemset.
+
+\begin{center}
+<<echo=FALSE>>=
+sets.check.closed <- sets.check[is.closed(sets.check)]
+inspect(head(sort(sets.check.closed, by="support")[c(3,8,9,11,15)]))
+@
+\textit{Figure 2.3 - Top 5 most frequent closed itemsets, excluding "." items}
+\end{center}
+
+Figure 2.3 shows the top 5 most frequent closed itemsets. Once again, the itemsets have been post-processed to exclude itemsets which include "." items. This is the first figure of frequent itemsets which includes some non-trivial itemsets. It shows that $rm=[2.2,2.6)$ and $yield=[67.9,124.0]$ are both frequent itemsets. However, because these are single-item itemsets, and the items in question were discretized using equal frequency, these particular itemsets are not particularly meaningful. 
+
+That being said, this may nonetheless meaningful, because it means that these particular relative maturity and yield ranges occur more frequently in the check dataset than in the test dataset, since the two datasets were discretized together. This relative maturity range is the second lowest range, so this may indicate that low relative maturity seeds are more likely to go to market, because the seeds at market being used at tests are most likely to have low relative maturity. 
+
+The same can be said for the yield range. The most frequent yield range in the check data is the highest possible yield range. This indicates that high-yield seeds are more likely to go to market, as the seeds at markey being used for testing have high yield. Therefore, at this point it can be, on a working basis, inferred that high-yield and low-rm seeds are optimal for going to market.
+
+
+\subsubsection{Maximal Itemsets}
+The original list of mined itemsets will be subsetted once more, but this time to isolate maximal itemsets. Maximal frequent itemsets are frequent itemsets for which none of the immediate supersets is frequent.
+
+\begin{center}
+<<echo=FALSE>>=
+sets.check.maximal <- sets.check[is.maximal(sets.check)]
+inspect(head(sort(sets.check.maximal, by="support")))
+@
+\textit{Figure 2.4 - Top 5 most frequent maximal itemsets}
+\end{center}
+
+Figure 2.4 shows the top-frequency maximal itemsets. Here, the "." items have been included, as all of the frequent maximal itemsets include some non-"." attributes alongside the "." attributes.
+In this set of itemsets, we see less meaningful data than in the prior, as each itemset includes a locationGroup and year item, which are soemwhat novel attributes that, in isolation, don't provide much insight to our analysis.
+
+\subsection{Test Variety Frequent Itemsets}
+
+To compare with the check variety itemset frequent itemsets, a set of frequent itemsets will be generated from the test transaction set.
+
+\begin{center}
+<<echo=FALSE>>=
+sets.test <- apriori(test, parameter=list(target="frequent", support=0.05))
+sets.test <- sort(sets.test, by="support")
+
+inspect(sets.test[c(8,16,20,28,33)])
+@
+\textit{Figure 2.5 - Top 5 most frequent itemsets, exluding "." items, for the test data}
+\end{center}
+
+Figure 2.5 shows the top 5 itemsets by frequency from the test dataset, exluding missing (".") items. Much like for the test dataset, we can see that these itemsets are not particularly meaningful, as they are all single-item itemsets representing years and location groups.
+
+
+\subsubsection{Closed Itemsets}
+Next, closed itemsets will be subsetted from the entire set of frequent itemsets from the test dataset.
+
+\begin{center}
+<<echo=FALSE>>=
+sets.test.closed <- sets.test[is.closed(sets.test)]
+inspect(head(sort(sets.test.closed, by="support")[c(3,5,7,10,13)]))
+@
+\textit{Figure 2.6 - Top 5 most frequent closed itemsets, excluding "." items}
+\end{center}
+
+The most frequent closed itemsets, shown in Figure 2.6, are mostly trivial once again. However, there is one non-trivial itemset, which is the itemset ${rm=[2.9,3.2]}$. This one-item itemset shows that the most frequent relative maturity range for the test data is the 3rd highest of the ranges. Since there are only 6 ranges for the relative maturity, this isn't particularly profound, but it does perhaps indicate that higher-rm seeds are more abundant in the test dataset than they are in the check dataset.
+
+\subsubsection{Maximal Itemsets}
+Finally, the maximal itemsets are subsetted from the entire frequent itemset set from the test dataset.
+
+\begin{center}
+<<echo=FALSE>>=
+sets.test.maximal <- sets.test[is.maximal(sets.test)]
+inspect(head(sort(sets.test.maximal, by="support")))
+@
+\textit{Figure 2.7 - Top 5 most frequent maximal itemsets}
+\end{center}
+
+The high-support maximal itemsets shown in Figure 2.7 show no obvious patterns, but instead a slew of various locations, years, relative maturity ranges, andyield ranges. Interestingly, one ratio range appears, the lowest possible range, but this is a single item out of 6 items, and so it likely has no strong implications about the test data.
+
+
+
+\subsection{Itemset Comparison}
+
+As a first novel comparison of the two sets of itemsets, we can compare the distribution of itemset cardinalities between the two transaction sets. Figures 2.8 shows the distributions of size of itemset for the check and test sets.
+
+<<hista, echo=FALSE, fig=TRUE, include=FALSE, width=5, height=5>>=
+barplot(table(size(sets.check)), xlab="itemset size", ylab="count",main="Histogram of Itemset Size for Check Itemset")
+@
+
+<<histb, echo=FALSE, fig=TRUE, include=FALSE, width=5, height=5>>=
+barplot(table(size(sets.test)), xlab="itemset size", ylab="count",main="Histogram of Itemset Size for Test Itemset")
+@
+
+
+\begin{center}
+\includegraphics[width=7cm, height=7cm]{project3-hista}
+\includegraphics[width=7cm, height=7cm]{project3-histb}
+
+\textit{Figure 2.8 - Distribution of frequent itemset cardinality from check and test itemsets}
+\end{center}
+
+Figures 2.8 show nearly identical distributions, which, on a structural level, indicates that the two datasets are quite similar. However, these plots provide little inference to any meaningful difference between the two datasets.
+
+As a second comparison, the number of closed and maximal itemsets from the two datasets will be compared in Figure 2.9.
+
+<<histc, echo=FALSE, fig=TRUE, include=FALSE, width=5, height=5>>=
+barplot(c(
+  frequent=length(sets.test),
+  closed=length(sets.test.closed),
+  maximal=length(sets.test.maximal)
+  ), ylab="count", xlab="itemsets", main="Frequent Itemset Types for Test Itemset")
+@
+
+<<histd, echo=FALSE, fig=TRUE, include=FALSE, width=5, height=5>>=
+barplot(c(
+  frequent=length(sets.check),
+  closed=length(sets.check.closed),
+  maximal=length(sets.check.maximal)
+  ), ylab="count", xlab="itemsets", main="Frequent Itemset Types for Check Itemset")
+@
+\begin{center}
+\includegraphics[width=7cm, height=7cm]{project3-histc}
+\includegraphics[width=7cm, height=7cm]{project3-histd}
+
+\textit{Figure 2.9 - Frequent itemset types for check and test itemsets}
+\end{center}
+
+Figure 2.9 shows that, once again, the two itemsets appear to be very similar. Therefore, from an itemset-based perspective, there, in general, doesn't appear to be a large difference between the two. Association rules will now be mined to search for more insight into the difference between the two itemsets.
+
+\subsection{Test Variety Association Rules}
+
+To begin, association rules will be mined from the test transaction set with default apriori parameters, and the rules will be sorted by descending lift. 
+
+\begin{center}
+<<echo=FALSE>>=
+rules.test <- apriori(test)
+rules.test <- sort(rules.test, by="lift")
+inspect(head(rules.test))
+@
+\textit{Figure 2.11 - Top-lift rules for the check transaction set}
+\end{center}
+
+460 rules were mined from the test transaction set using default apriori parameters. Figure 2.10 shows the top rules from the mined ruleset, based on lift. None of these rules are particularly meaningful, since they are all predicting locationGroup. However, there are likely more meaty rules inside of the ruleset, which should become useful in visualizations comparing the check and test rulesets.
+
+\subsection{Check Variety Association Rules}
+
+The same apriori parameters are used to mine rules from the check transaction set.
+
+\begin{center}
+<<echo=FALSE>>=
+rules.check <- apriori(check)
+rules.check <- sort(rules.check, by="lift")
+inspect(head(rules.check))
+@
+\textit{Figure 2.11 - Top-lift rules for the test transaction set}
+
+315 rules were mined from the check transaction set with default apriori parameters. Figure 2.11 shows the top rules from that ruleset, based on lift. The first rule is the only interesting rule among them, which shows that, with a confidence of 0.8755, seeds posed to be in the class of 2011 had a graduated value of "YES." This likely indicates that 2011 was a highly non-competitive year for the soybean seed graduates.
+
+\subsection{Comparison and Visualization}
+In the following section, a number of visualizations will be used to attempt to discern a distinction between the two transaction sets through the use of the association rules mined from those sets.
+
+\subsubsection{Support vs Confidence}
+<<echo=FALSE, fig=TRUE>>=
+plot(rules.test,control=list(jitter=10))
+@
+
+
+\subsubsection{Grouped Matrix Plots}
+
+<<echo=FALSE, fig=TRUE>>=
+plot(rules.check, method="grouped")
+@
+
+
+\subsubsection{Ruleset Graph Plots}
+<<echo=FALSE, fig=TRUE>>=
+plot(sample(rules.check, 20), method="graph", control=list(type="items"))
+@
+
+
+\end{center}
 
 \section{Evaluation}
 
