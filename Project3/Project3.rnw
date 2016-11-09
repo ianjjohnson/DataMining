@@ -177,6 +177,7 @@ The yield-to-rm ratio, which will be called 'yield ratio,' is computed using a r
 hist(df$ratio[df$ratio < 100], main = "Histogram of Ratio Prior to Discretization",freq = FALSE)
 lines(density(df$ratio[df$ratio < 100]))
 @
+
 \textit{Figure 1.6 - Histogram of yield ratio prior to discretization}
 \end{center}
 
@@ -187,6 +188,7 @@ Yield ratio, like yield and RM, is normally distributed, so it can be discretize
 df$ratio <- discretize(df$ratio, method="frequency", categories = 6)
 table(df$ratio)
 @
+
 \textit{Figure 1.7 - Number of rows in each discretized yield ratio category}
 \end{center}
 
@@ -227,6 +229,7 @@ Figure 1.8 shows the number of check and non-check rows in the original dataset,
 <<echo=FALSE>>=
 summary(check)
 @
+
 \textit{Figure 1.9 - Summary information for the check transaction set}
 \end{center}
 
@@ -243,6 +246,7 @@ Figure 1.10 shows an item frequency plot for individual items in the check trans
 library(arulesViz)
 itemFrequencyPlot(check, topN=20)
 @
+
 \textit{Figure 1.10 - Item frequency plot for check transaction set}
 \end{center}
 
@@ -258,9 +262,14 @@ First, the check variety itemset will be evaluated. A number of frequent itemset
 To begin our analysis, frequent itemsets will be mined from the check dataset with the default support constraint of 0.05.
 Figure 2.1 shows the first 10 most frequent itemsets (the first 10 items in the itemset after the set is sorted by support).
 
+<<echo=FALSE, results=hide>>=
+sets.check <- apriori(check, parameter=list(target="frequent", support=0.05))
+@
+
+
 \begin{center}
 <<echo=FALSE>>=
-sets.check <- apriori(check, parameter=list(target="frequent", support=0.05))
+
 sets.check <- sort(sets.check, by="support")
 
 inspect(head(sets.check, n=10))
@@ -315,9 +324,13 @@ In this set of itemsets, we see less meaningful data than in the prior, as each 
 
 To compare with the check variety itemset frequent itemsets, a set of frequent itemsets will be generated from the test transaction set.
 
+<<echo=FALSE, results=hide>>=
+sets.test <- apriori(test, parameter=list(target="frequent", support=0.05))
+@
+
+
 \begin{center}
 <<echo=FALSE>>=
-sets.test <- apriori(test, parameter=list(target="frequent", support=0.05))
 sets.test <- sort(sets.test, by="support")
 
 inspect(sets.test[c(8,16,20,28,33)])
@@ -408,9 +421,14 @@ Figure 2.9 shows that, once again, the two itemsets appear to be very similar. T
 
 To begin, association rules will be mined from the test transaction set with default apriori parameters, and the rules will be sorted by descending lift. 
 
+<<echo=FALSE, results=hide>>=
+rules.test <- apriori(test)
+@
+
+
 \begin{center}
 <<echo=FALSE>>=
-rules.test <- apriori(test)
+
 rules.test <- sort(rules.test, by="lift")
 inspect(head(rules.test))
 @
@@ -423,13 +441,18 @@ inspect(head(rules.test))
 
 The same apriori parameters are used to mine rules from the check transaction set.
 
+<<echo=FALSE,results=hide>>=
+rules.check <- apriori(check)
+@
+
+
 \begin{center}
 <<echo=FALSE>>=
-rules.check <- apriori(check)
 rules.check <- sort(rules.check, by="lift")
 inspect(head(rules.check))
 @
 \textit{Figure 2.11 - Top-lift rules for the test transaction set}
+\end{center}
 
 315 rules were mined from the check transaction set with default apriori parameters. Figure 2.11 shows the top rules from that ruleset, based on lift. The first rule is the only interesting rule among them, which shows that, with a confidence of 0.8755, seeds posed to be in the class of 2011 had a graduated value of "YES." This likely indicates that 2011 was a highly non-competitive year for the soybean seed graduates.
 
@@ -437,25 +460,69 @@ inspect(head(rules.check))
 In the following section, a number of visualizations will be used to attempt to discern a distinction between the two transaction sets through the use of the association rules mined from those sets.
 
 \subsubsection{Support vs Confidence}
-<<echo=FALSE, fig=TRUE>>=
-plot(rules.test,control=list(jitter=10))
+The first visual comparison of the two sets of association rules will be a support vs confidence plot for all of the rules in each test set, color-coded by lift. Note that some jitter is added to each of the plots to separate duplicate points on the plots.
+
+<<supptest, echo=FALSE, fig=TRUE, include=FALSE>>=
+plot(rules.test,control=list(jitter=10), main="Test Set")
+@
+<<suppcheck, echo=FALSE, fig=TRUE, include=FALSE>>=
+plot(rules.check,control=list(jitter=10), main="Check Set")
 @
 
+\begin{center}
+\includegraphics[width=7cm, height=7cm]{project3-suppcheck}
+\includegraphics[width=7cm, height=7cm]{project3-supptest}
+
+\textit{Figure 2.12 - Support vs Confidence plots for the two sets of association rules}
+\end{center}
+
+Figure 2.12 shows us a number of things. First, the upper-bound of lift is much higher for the check dataset than for the test dataset. This indicates that there are a few very strong rules in the check dataset that do not have a counterpart in the test dataset. 
+
+Additionally, there appear to be many more high-support rules in the test set than in the check set. This observation, however, is likely due to the discrepancy in size of the two datasets, as the test set is much larger than the check set.
+
+Both rulesets have a large number of high-confidence, low-support rules, which often include "." values as the RHS of the rule. Those rules are generally not particularly meaningful. However, there are also a number of high-confidence, high-support rules in each dataset. These rules have more profound meanings, as a number of them have ratio scores as a RHS, but they have low lift, so they're unlikely to be strong predictors for the data.
+
+The test set also appears to have a number of low-confidence, low-support, high-lift rules (dark red points in the bottom-left of the right graph). Those rules are the same rules isolated in Figure 2.11, which shows that those rules are generally not particularly meaningful, as they, in essence, associate a year and relative maturity with a locationGroup, and the locations were clustered based on those attributes to yield those locationGroups.
 
 \subsubsection{Grouped Matrix Plots}
 
-<<echo=FALSE, fig=TRUE>>=
-plot(rules.check, method="grouped")
+Next, grouped matrix plots will be used to attempt to identify trends among each of the two rulesets. A matrix plot is built for both sets, and both are shown in Figure 2.13.
+
+<<matcheck, echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+plot(rules.check, method="grouped", main="Check Set")
 @
+<<mattest,  echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+plot(rules.test, method="grouped", main="Test Set")
+@
+
+\begin{center}
+\includegraphics[width=7cm, height=7cm]{project3-matcheck}
+\includegraphics[width=7cm, height=7cm]{project3-mattest}
+
+\textit{Figure 2.13 - Grouped matrix plots for the two rulesets (check on the left, test on the right)}
+\end{center}
+
 
 
 \subsubsection{Ruleset Graph Plots}
-<<echo=FALSE, fig=TRUE>>=
-plot(sample(rules.check, 20), method="graph", control=list(type="items"))
+
+Finally, a ruleset graph visualization is used to compare the top-20 rules by lift from the two datasets. The two ruleset graphs for the two datasets are shown in Figure 2.14.
+
+<<graphcheck,  echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+plot(head(rules.check, n=20), method="graph", control=list(type="items"),main="Check Set")
 @
 
+<<graphtest,  echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+plot(head(rules.test, n=20), method="graph", control=list(type="items"), main="Test Set")
+@
 
+\begin{center}
+\includegraphics[width=7cm, height=7cm]{project3-graphcheck}
+\includegraphics[width=7cm, height=7cm]{project3-graphtest}
+
+\textit{Figure 2.14 - Ruleset graphs for the two rulesets}
 \end{center}
+
 
 \section{Evaluation}
 
