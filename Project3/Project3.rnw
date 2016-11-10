@@ -502,6 +502,9 @@ plot(rules.test, method="grouped", main="Test Set")
 \textit{Figure 2.13 - Grouped matrix plots for the two rulesets (check on the left, test on the right)}
 \end{center}
 
+Figure 2.13 shows that there are no strong rule-based trends toward any ratio or yield interval for either the check set or the test set. The check set appears to have one high-lift rule to predict graduation, but the remainder of the rules shown in the grouped matrix have location groups and "." attributes as the right-hand side. The same is true for the test set, whose grouped matrix rules only predict "." attributes, location groups, and the year 2012.
+
+Beyond the simple interpretation - that there don't appear to be any strong association-rule trends to predict yield or yield ratio - it can also be inferred from Figure 2.13 that the check and test transaction sets are, in fact, quite similar, as the rulesets mined from the two sets don't appear to differ from one another in any meaningful way.
 
 
 \subsubsection{Ruleset Graph Plots}
@@ -523,10 +526,13 @@ plot(head(rules.test, n=20), method="graph", control=list(type="items"), main="T
 \textit{Figure 2.14 - Ruleset graphs for the two rulesets}
 \end{center}
 
+Both of the ruleset graphs in Figure 2.14 shows that the items that dominate the top-lift rules are generally year, group, and location items. Both graphs have very few relative maturity, yield, or yield-ratio items, which indicates that no strong trends related to those variables were identified using association rule mining.
+
+The previous visualizations and comparisons showed that, generally speaking, the check and test datasets are quite similar. The business implications of this result will be evaluated in the upcoming sections.
+
 
 \section{Evaluation}
 
-\section{Conclusion}
 
 \begin{thebibliography}{9} 
 
