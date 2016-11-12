@@ -9,8 +9,8 @@
 \begin{titlepage}
 \vspace*{\fill}
 \begin{center}
-      {\Huge Association Rule Analysis for Syngenta Soybean Data}\\[0.5cm]
-      {\Large Association Rule Mining for Data Understanding}\\[1.0cm]
+      {\Huge Association Rule and Frequent Itemset Analysis for Syngenta Soybean Data}\\[0.5cm]
+      {\Large Comparing Test and Check Seed Results}\\[1.0cm]
       {\Large Ian Johnson}\\[0.4cm]
       {\Large Southern Methodist University}\\[0.4cm]
       \today
@@ -34,7 +34,7 @@
   
       {\Large Executive Summary}\\[1.0cm]
 
-     Lorem Ipsum... TODO WRITE EXECUTIVE SUMMARY.\\[3.0cm]
+     This report uses association rule and frequent itemset mining to explore the dataset from the Informs OR Student Competition related to Syngenta soybean seed selection and sales optimization. The dataset is split into two subsets - check seeds and test seeds - and the two subsets are converted to transaction sets after data discretization is performed. Association rules and frequent itemsets are mined from the two disjoint datasets, and the resulting rules and items are compared between sets using various metrics and visualizations. The two disjoint sets are found to be quite similar, and the conclusion is made that the two sets are statistically similar, and that it is viable, for the purpose of the OR competition, to use exclusively the check set to build a predictive model for the entire dataset for classification of seed graduation, or for regression of bags sold.\\[3.0cm]
      
 \end{center}
 \vspace*{\fill}
@@ -56,10 +56,10 @@ The raw Informs OR dataset is table data where each row represents an individual
 \item RM (Relative Maturity) (\textit{interval}) - A floating point number between 2 and 5 which represents the rate at which the variety of seed matures
 \item Class Of (\textit{interval}) - The year that the seed "graduated" to market, or "." if the seed did not graduate
 \item Grad (\textit{nominal}) - A binary attribute which is set to 1 (\textit{true}) if the seed being tested graduated after the given test
-\item Bags Sold (\textit{ratio}) - The number of bags of seeds sold in the first year after this seed went to market or "." if the seed ddn't go to market
+\item Bags Sold (\textit{ratio}) - The number of bags of seeds sold in the first year after this seed went to market or "." if the seed didn't go to market
 \item Yield (\textit{ratio}) - The number of bushels of soybeans produced per acre by the seed during this test
-\item Replication Number (\textit{nominal}) - An integer code used to deliniate two experiments which use the same seed and same location and same year
-\item Year (\textit{interval}) - The year when the experiment occured
+\item Replication Number (\textit{nominal}) - An integer code used to delineate two experiments which use the same seed and same location and same year
+\item Year (\textit{interval}) - The year when the experiment occurred
 \end{itemize}
 
 Before transaction data is generated from this raw dataset, it will be manipulated and formatted such that it becomes easiest to work with.
@@ -102,9 +102,9 @@ The dataset which will be used moving forward has the following columns:
 \item Check (\textit{nominal}) - A binary attribute which is set to 1 (\textit{true}) if the seed being tested is already at market and being used for comparison to potential new seeds
 \item RM (Relative Maturity) (\textit{interval}) - A floating point number between 2 and 5 which represents the rate at which the variety of seed matures
 \item Grad (\textit{nominal}) - A binary attribute which is set to 1 (\textit{true}) if the seed being tested graduated after the given test
-\item Bags Sold (\textit{ratio}) - The number of bags of seeds sold in the first year after this seed went to market or "." if the seed ddn't go to market
+\item Bags Sold (\textit{ratio}) - The number of bags of seeds sold in the first year after this seed went to market or "." if the seed didn't go to market
 \item Yield (\textit{ratio}) - The number of bushels of soybeans produced per acre by the seed during this test
-\item Year (\textit{interval}) - The year when the experiment occured
+\item Year (\textit{interval}) - The year when the experiment occurred
 \item Location Group (\textit{nominal}) - The cluster number for the location of this experiment
 \end{itemize}
 
@@ -141,7 +141,7 @@ Figure 1.3 shows that, after discretization, the yield attribute in the datafram
 Discretization is performed using CRAN package "arules" \textsuperscript{[4]}
 
 \subsubsection{Relative Maturity Discretization}
-Relative maturity, as defined by the syngenta problem statement, is a representation of the number of months that it takes for a soybean seed to mature, where lower values are preferred.
+Relative maturity, as defined by the Syngenta problem statement, is a representation of the number of months that it takes for a soybean seed to mature, where lower values are preferred.
 
 In order to inform the discretization strategy decision for relative maturity (RM), a histogram of the attribute is plotted in Figure 1.4.
 
@@ -235,7 +235,7 @@ summary(check)
 
 Figure 1.9 shows a summary of the check transaction set, whose most frequent items are \textit{grad=.} and \textit{bagsold=.} (which represents all non-graduating seeds). This means that there will likely be a number of non-meaningful association rules built, as these items essentially represent missing data. However, this will be handled in rule post-processing by only selecting rules which are of interest.
 
-The summary for the test transaction set is ommited in the interest of brevity.
+The summary for the test transaction set is omitted in the interest of brevity.
 
 \subsubsection{Item Frequency Plot}
 
@@ -303,7 +303,7 @@ Figure 2.3 shows the top 5 most frequent closed itemsets. Once again, the itemse
 
 That being said, this may nonetheless meaningful, because it means that these particular relative maturity and yield ranges occur more frequently in the check dataset than in the test dataset, since the two datasets were discretized together. This relative maturity range is the second lowest range, so this may indicate that low relative maturity seeds are more likely to go to market, because the seeds at market being used at tests are most likely to have low relative maturity. 
 
-The same can be said for the yield range. The most frequent yield range in the check data is the highest possible yield range. This indicates that high-yield seeds are more likely to go to market, as the seeds at markey being used for testing have high yield. Therefore, at this point it can be, on a working basis, inferred that high-yield and low-rm seeds are optimal for going to market.
+The same can be said for the yield range. The most frequent yield range in the check data is the highest possible yield range. This indicates that high-yield seeds are more likely to go to market, as the seeds at market being used for testing have high yield. Therefore, at this point it can be, on a working basis, inferred that high-yield and low-rm seeds are optimal for going to market.
 
 
 \subsubsection{Maximal Itemsets}
@@ -318,7 +318,7 @@ inspect(head(sort(sets.check.maximal, by="support")))
 \end{center}
 
 Figure 2.4 shows the top-frequency maximal itemsets. Here, the "." items have been included, as all of the frequent maximal itemsets include some non-"." attributes alongside the "." attributes.
-In this set of itemsets, we see less meaningful data than in the prior, as each itemset includes a locationGroup and year item, which are soemwhat novel attributes that, in isolation, don't provide much insight to our analysis.
+In this set of itemsets, we see less meaningful data than in the prior, as each itemset includes a locationGroup and year item, which are somewhat novel attributes that, in isolation, don't provide much insight to our analysis.
 
 \subsection{Test Variety Frequent Itemsets}
 
@@ -335,10 +335,10 @@ sets.test <- sort(sets.test, by="support")
 
 inspect(sets.test[c(8,16,20,28,33)])
 @
-\textit{Figure 2.5 - Top 5 most frequent itemsets, exluding "." items, for the test data}
+\textit{Figure 2.5 - Top 5 most frequent itemsets, excluding "." items, for the test data}
 \end{center}
 
-Figure 2.5 shows the top 5 itemsets by frequency from the test dataset, exluding missing (".") items. Much like for the test dataset, we can see that these itemsets are not particularly meaningful, as they are all single-item itemsets representing years and location groups.
+Figure 2.5 shows the top 5 itemsets by frequency from the test dataset, excluding missing (".") items. Much like for the test dataset, we can see that these itemsets are not particularly meaningful, as they are all single-item itemsets representing years and location groups.
 
 
 \subsubsection{Closed Itemsets}
@@ -365,7 +365,7 @@ inspect(head(sort(sets.test.maximal, by="support")))
 \textit{Figure 2.7 - Top 5 most frequent maximal itemsets}
 \end{center}
 
-The high-support maximal itemsets shown in Figure 2.7 show no obvious patterns, but instead a slew of various locations, years, relative maturity ranges, andyield ranges. Interestingly, one ratio range appears, the lowest possible range, but this is a single item out of 6 items, and so it likely has no strong implications about the test data.
+The high-support maximal itemsets shown in Figure 2.7 show no obvious patterns, but instead a slew of various locations, years, relative maturity ranges, and yield ranges. Interestingly, one ratio range appears, the lowest possible range, but this is a single item out of 6 items, and so it likely has no strong implications about the test data.
 
 
 
@@ -488,16 +488,16 @@ The test set also appears to have a number of low-confidence, low-support, high-
 
 Next, grouped matrix plots will be used to attempt to identify trends among each of the two rulesets. A matrix plot is built for both sets, and both are shown in Figure 2.13.
 
-<<matcheck, echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+<<matcheck, echo=FALSE, fig=TRUE, include=FALSE, width=7, height=10>>=
 plot(rules.check, method="grouped", main="Check Set")
 @
-<<mattest,  echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+<<mattest,  echo=FALSE, fig=TRUE, include=FALSE, width=7, height=10>>=
 plot(rules.test, method="grouped", main="Test Set")
 @
 
 \begin{center}
-\includegraphics[width=7cm, height=7cm]{project3-matcheck}
-\includegraphics[width=7cm, height=7cm]{project3-mattest}
+\includegraphics[width=7cm, height=10cm]{project3-matcheck}
+\includegraphics[width=7cm, height=10cm]{project3-mattest}
 
 \textit{Figure 2.13 - Grouped matrix plots for the two rulesets (check on the left, test on the right)}
 \end{center}
@@ -511,17 +511,17 @@ Beyond the simple interpretation - that there don't appear to be any strong asso
 
 Finally, a ruleset graph visualization is used to compare the top-20 rules by lift from the two datasets. The two ruleset graphs for the two datasets are shown in Figure 2.14.
 
-<<graphcheck,  echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+<<graphcheck,  echo=FALSE, fig=TRUE, include=FALSE, width=8, height=8>>=
 plot(head(rules.check, n=20), method="graph", control=list(type="items"),main="Check Set")
 @
 
-<<graphtest,  echo=FALSE, fig=TRUE, include=FALSE, width=4, height=4>>=
+<<graphtest,  echo=FALSE, fig=TRUE, include=FALSE, width=8, height=8>>=
 plot(head(rules.test, n=20), method="graph", control=list(type="items"), main="Test Set")
 @
 
 \begin{center}
-\includegraphics[width=7cm, height=7cm]{project3-graphcheck}
-\includegraphics[width=7cm, height=7cm]{project3-graphtest}
+\includegraphics[width=7.5cm, height=7.5cm]{project3-graphcheck}
+\includegraphics[width=7.5cm, height=7.5cm]{project3-graphtest}
 
 \textit{Figure 2.14 - Ruleset graphs for the two rulesets}
 \end{center}
@@ -532,6 +532,24 @@ The previous visualizations and comparisons showed that, generally speaking, the
 
 
 \section{Evaluation}
+
+\subsection{Findings}
+
+The principle finding of this report is that there is no significant difference in the test and check datasets. The lack of noticeable differences between the frequent itemsets and association rule sets generated in the previous section shows that, in general, there is no strong distinction to be made between the two sets based on frequent itemset and association rule mining. However, this does not preclude there being a statistically significant difference between the sets in some way.
+
+One novel finding was that it appeared that, to some degree, low-relative maturity and high-yield seeds appeared more frequently in the check dataset. This falls in line with the business motivation of the problem: to produce seeds which produce a lot of soybeans and can be grown in various climates (as low-rm seeds are the only viable seeds in climates with short growing seasons). The frequency of high-yield, low-rm seeds in the check set may indicate that that type of seed is preferred for "graduation," as they seem to be over-represented in the graduated seed base. This finding may help inform the seed-selection process; however, there is not significant data to support this finding, so it should not be relied upon too heavily.
+
+\subsection{Insights into Syngenta Competition}
+
+As was previously discussed, the finding that low-rm, high-yield seeds appear more frequently in the check itemset can help inform the seed selection. Using this information, we can build a model which favors high-yield, low-rm seeds. This can be done in multiple ways, one of which being yield ratio feature creation. However, this would encourage a model to simply repeat the process as it has been done before, which may, in fact, not be the optimal solution to the problem. 
+
+The fact that the test and check sets are so similar may, in fact, help inform a new model. Because the two sets are so similar, according to this report's findings, it is likely feasible to build a model from exclusively check varieties that could be used for regression of seeds sold for incoming seeds. This would help reduce the problem space to only graduating seeds, which would help eliminate some of the noisy/missing data in the test dataset.
+
+\subsection{Result Usability}
+
+The results discussed above can, in good faith, be applied to the Informs OR Syngenta competition; however, because the results came from only association rule and frequent itemset analysis, they should not be treated as an end-result, but instead a baseline. It is possible that there do, in fact, exist meaningful differences between the two subsets of the Syngenta experimental dataset. 
+
+Having said that, I have chosen to build a classification model for bags sold using only the check dataset, as I perceive the check dataset to be quite similar to to the test dataset.
 
 
 \begin{thebibliography}{9} 
